@@ -1,22 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { IoPersonCircleOutline } from "react-icons/io5";
+import AppContext from "../context/appContext";
 
-const Index = ( props ) => {
-    const [admin, setAmin] = useState({
-        username:"admin",
-        password:"12345"
-    });
+const Login = ( props ) => {
+    const { response, types, login } = useContext(AppContext)
+    const [username, setUsername] = useState()
+    const [password, setPassword] = useState()
+    const [type, setType] = useState()
+    const [token, setToken] = useState()
 
     useEffect(() => {
-        // console.log(admin.username)
-    }, []);
+        
+    }, [type]);
 
     const handleRegister = () => {
         props.history.push("/register")
     }
 
     const handleLogin = () => {
+        if(username !== "" && password !== "") {
+            response.map(item => {
+                if(username === item.username && password === item.password) {
+                    let token = genToken()
+                    const authLogin = {
+                        "token": token,
+                        "login": true
+                    }
+                    login(authLogin)
+                    props.history.push("/main")
+                    return
+                }
+            });
         
+        } else {
+            // login(false)
+        }
+        
+    }
+
+    const genToken = () => {
+        let pass = ""; 
+        let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +  
+                'abcdefghijklmnopqrstuvwxyz0123456789@#$'; 
+          
+        for (let i = 1; i <= 15; i++) { 
+            var char = Math.floor(Math.random() 
+                        * str.length + 1); 
+              
+            pass += str.charAt(char) 
+        } 
+        return pass
     }
 
     return (
@@ -24,22 +57,38 @@ const Index = ( props ) => {
             <form className="form align-middle">
                 <div className="form-group">
                     <label for="username">Username</label>
-                    <input type="text" className="form-control" id="username" />
+                    <input 
+                        type="text" 
+                        className="form-control" 
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
                 </div>
                 <div className="form-group">
                     <label for="password">Password</label>
-                    <input type="password" className="form-control" id="password" />
+                    <input 
+                        type="password" 
+                        className="form-control"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
                 </div>
 
                 <div className="input-group mb-3">
                     <div className="input-group-prepend">
                         <label className="input-group-text" for="inputGroupType">Types</label>
                     </div>
-                    <select className="custom-select" id="inputGroupType">
-                        {/* <option selected>Choose...</option> */}
-                        <option value="student" selected>Student</option>
-                        <option value="teacher">Teacher</option>
-                        <option value="admin">Admin</option>
+                    <select className="custom-select" id="inputGroupType"
+                        onChange={(e) => setType({ type: e.target.value })}
+                    >
+                        {
+                            types.map(type => (
+                                <option key={type.id} value={type.id}>{type.label}</option>
+                            ))
+                        }
+                        
+                        {/* <option value={type} selected>Student</option>
+                        <option value={type}>Teacher</option> */}
                     </select>
                 </div>
 
@@ -52,4 +101,4 @@ const Index = ( props ) => {
     )
 }
 
-export default Index
+export default Login
