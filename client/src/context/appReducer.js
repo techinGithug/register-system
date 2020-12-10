@@ -6,8 +6,8 @@ import {
     UPDATE_TEACHER,
     DELETE_TEACHER,
     LOGOUT,
-    REGISTER,
-    AUTHEN_LOGIN
+    AUTHEN_LOGIN,
+    REGISTER_STUDENT
  } from "../context/appAction";
 
  const appReducer = (state, action) => {
@@ -15,7 +15,11 @@ import {
         case AUTHEN_LOGIN :
             return {
                 ...state,
-                authenLogin: {token: action.payload.token, isLogin: action.payload.isLogin}
+                authenLogin: {
+                    token: action.payload.token, 
+                    isLogin: action.payload.isLogin,
+                    id: action.payload.id
+                }
             };
         
         case ADD_STUDENT :
@@ -41,7 +45,7 @@ import {
         case LOGOUT: 
             return {
                 ...state,
-                authenLogin: {token:"", isLogin:false}
+                authenLogin: {token:"", isLogin:false, id:""}
             };
 
         case UPDATE_TEACHER :
@@ -49,12 +53,13 @@ import {
 
             };
 
-        case UPDATE_STUDENT :
+        case REGISTER_STUDENT:
             return {
-
+                ...state,
+                students: [...state.students, action.payload]
             };
 
-        case REGISTER:
+        case UPDATE_STUDENT :
             return {
 
             };

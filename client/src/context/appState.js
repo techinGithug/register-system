@@ -3,14 +3,15 @@ import AppContext from "../context/appContext";
 import AppReducer from "../context/appReducer";
 import InitialState from "../context/initialState";
 import { 
-    AUTHEN_LOGIN,
     ADD_STUDENT, 
-    UPDATE_STUDENT, 
-    DELETE_STUDENT, 
     ADD_TEACHER,
-    UPDATE_TEACHER,
+    AUTHEN_LOGIN,
+    DELETE_STUDENT, 
     DELETE_TEACHER,
-    LOGOUT
+    LOGOUT,
+    REGISTER_STUDENT,
+    UPDATE_STUDENT, 
+    UPDATE_TEACHER
 } from "../context/appAction";
 
 const AppState = (props) => {
@@ -32,7 +33,10 @@ const AppState = (props) => {
     };
 
     const registerStudent = (data) => {
-        console.log(data)
+        dispatch({
+            type: REGISTER_STUDENT,
+            payload: data
+        })
     };
 
     // Logout
@@ -47,7 +51,7 @@ const AppState = (props) => {
             // Sate
             authenLogin: state.authenLogin,
             admins: state.admins,
-            response: state.response,
+            register: state.register,
             students: state.students,
             teachers: state.teachers,
             // types: state.types,

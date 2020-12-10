@@ -1,25 +1,36 @@
-import React, { Fragment, useContext, useEffect } from 'react';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
 import { IoPerson } from "react-icons/io5";
 import AppContext from "../../context/appContext";
+import InitialState from '../../context/initialState';
 
 const Student = (props) => {
-    const { authenLogin, logout } = useContext(AppContext)
+    const { authenLogin, logout, students } = useContext(AppContext)
+    const [data, setData] = useState([])
+    // console.log(authenLogin)
     useEffect(() => {
-        validate()
-    })
+        init()
+    }, [])
 
-    const validate = () => {
+    
+    const init = async () => {
         if(authenLogin.length === 0) {
             props.history.push("/")
+        } else {
+            const { id } = authenLogin
+            const std = await students.filter(val => {
+                return id === val.id
+            })
+            setData(std[0])
         }
     }
 
     const handleEditAccount = () => {
         console.log("Edit account...")
+        
     }
 
     const handleLogout = async () => {
-        await logout()
+        logout()
         props.history.push("/")
         window.location.reload();
     }
@@ -50,21 +61,21 @@ const Student = (props) => {
                         <tbody>
                             <tr>
                                 <th width="90">Name</th>
-                                <td>Johny Dape</td>
+                                <td>{data.firstname}</td>
                                 <th width="90">Birthday</th>
-                                <td>1990/12/06</td>
+                                <td>{data.birthday}</td>
                             </tr>
                             <tr>
                                 <th>Faculty</th>
-                                <td>Science and technology</td>
+                                <td>{data.faculty}</td>
                                 <th>Major</th>
-                                <td>Computer-sceince</td>
+                                <td>{data.major}</td>
                             </tr>
                             <tr>
                                 <th>Level</th>
-                                <td>3</td>
+                                <td>{data.level}</td>
                                 <th>Type</th>
-                                <td>Normal</td>
+                                <td>{data.type}</td>
                             </tr>
                         </tbody>
                     </table>

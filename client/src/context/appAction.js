@@ -2,7 +2,7 @@
 export const LOGOUT = "LOGOUT";
 export const AUTHEN_LOGIN = "AUTHEN_LOGIN";
 
-export const REGISTER = "REGISTER";
+export const REGISTER_STUDENT = "REGISTER_STUDENT";
 
 export const ADD_STUDENT = "ADD_STUDENT";
 export const UPDATE_STUDENT = "UPDATE_STUDENT";

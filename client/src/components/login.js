@@ -3,10 +3,11 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 import AppContext from "../context/appContext";
 
 const Login = ( props ) => {
-    const { response, login } = useContext(AppContext)
+    const { students, login } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [type, setType] = useState({type: "1"})
+    const [isError, setIsError] = useState(false);
 
     const types = [
         {id:"1", label:"Student"},
@@ -15,7 +16,7 @@ const Login = ( props ) => {
 
     useEffect(() => {
         // console.log("Type... ",type.type)
-    }, [type]);
+    }, [type, isError]);
 
     const handleRegister = () => {
         const id = type.type
@@ -27,36 +28,38 @@ const Login = ( props ) => {
         }
     }
 
-    const handleLogin = () => {
+    const handleLogin = (e) => {
+        e.preventDefault()
         if(username !== "" && password !== "") {
-            let haveUser = checkUser()
-            if(haveUser) {
-                const id = type.type
-                if(id === "1") { // 1 is student
+            const id = type.type
+            if(id === "1") { // 1 is student
+                let isFound = checkStudent()
+                if(isFound) {
                     props.history.push("/student")
                 }
-                if(id === "2") { // 2 is teacher
-                    
-                    // props.history.push("/teacher")
-                }
-
-            } else {
-
+            }
+            if(id === "2") { // 2 is teacher
+                
+                // props.history.push("/teacher")
             }
         
         } else {
-            // login(false)
+            setIsError(true)
+            setTimeout(() => {
+                setIsError(false)
+            }, 5000);
         }
     }
 
-    const checkUser = () => {
+    const checkStudent = () => {
         let res = false
-        response.map(item => {
+        students.map(item => {
             if(username === item.username && password === item.password) {
                 let token = genToken()
                 const authLogin = {
-                    "token": token,
-                    "isLogin": true
+                    token: token,
+                    isLogin: true,
+                    id:item.id
                 }
                 login(authLogin)
                 // props.history.push("/main")
@@ -82,7 +85,8 @@ const Login = ( props ) => {
 
     return (
         <div className="w-25 mx-auto mt-5">
-            <form className="form align-middle">
+            <div className="text-center mb-4"><h3>Login</h3></div>
+            <form className="form align-middle" onSubmit={(e) => handleLogin(e)}>
                 <div className="form-group">
                     <label>Username</label>
                     <input 
@@ -120,9 +124,15 @@ const Login = ( props ) => {
                 </div>
 
                 <div className="text-center">
-                    <button type="button" className="btn btn-light mr-1" onClick={() => handleLogin()}>Login</button>
+                    <button type="submit" className="btn btn-light mr-1">Login</button>
                     <button type="button" className="btn btn-light" onClick={() => handleRegister()}>Register</button>
                 </div>
+                {isError && (
+                    <div className="alert alert-danger mt-4" role="alert">
+                        Username or password incorrect!
+                    </div>
+                )}
+               
             </form>
         </div>
     )

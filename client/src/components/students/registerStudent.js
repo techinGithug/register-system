@@ -5,14 +5,18 @@ const RegisterStudent = (props) => {
     const { registerStudent } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
     const [firstname, setFirstname] = useState("")
     const [lastname, setLastname] = useState("")
     const [birthday, setBirthday] = useState("")
     const [faculty, setFaculty] = useState("")
     const [major, setMajor] = useState("")
-    const [level, setLevel] = useState("")
-    const [type, setType] = useState("")
+    const [level, setLevel] = useState("0")
+    const [type, setType] = useState("0")
 
+    const [isError, setIsError] = useState(false)
+    const [msg, setMsg] = useState("")
+ 
     const types = [
         {id:"0", label:"--Select--"},
         {id:"1", label:"Normal"},
@@ -35,28 +39,53 @@ const RegisterStudent = (props) => {
         // console.log(type.type)
     }, [level])
 
-    const handleRegister = () => {
-        console.log(level) 
-        console.log(type)
-        const data ={
-            username,
-            password,
-            firstname, 
-            lastname, 
-            birthday, 
-            faculty, 
-            major,
-            level:level.level,
-            type:type.type
-        };
-        registerStudent(data);
+    const handleRegister = (e) => {
+        e.preventDefault()
+        let msg = "";
+        if(password !== confirmPassword) {
+            msg = "Password not match!"
+            setMsg(msg)
+            setTimeoutError()
+
+        } else if(level === "0"){
+            msg = "Please select Level!";
+            setMsg(msg)
+            setTimeoutError()
+
+        } else if(type === "0") {
+            msg = "Please select Type!";
+            setMsg(msg)
+            setTimeoutError()
+        } 
+        
+        else {
+            const data ={
+                username,
+                password,
+                firstname, 
+                lastname, 
+                birthday, 
+                faculty, 
+                major,
+                level:level.level,
+                type:type.type
+            };
+            registerStudent(data);
+        }
+    }
+
+    const setTimeoutError = () => {
+        setIsError(true)
+        setTimeout(() => {
+            setIsError(false)
+        }, 5000);
     }
 
     return (
         <Fragment>
             <div className="w-25 mx-auto">
                 <div className="mt-2 text-center"><h3>Register</h3></div>
-                <form className="mt-4 mb-5">
+                <form className="mt-4 mb-5"  onSubmit={(e) => handleRegister(e)}>
                     <div className="form-group">
                         <label>Username</label>
                         <input 
@@ -74,6 +103,20 @@ const RegisterStudent = (props) => {
                             className="form-control"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            min="6"
+                            max="15"
+                            required
+                        />
+                    </div>
+                    <div className="form-group">
+                        <label >Confirm password</label>
+                        <input 
+                            type="password" 
+                            className="form-control"
+                            value={confirmPassword}
+                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            min="6"
+                            max="15"
                             required
                         />
                     </div>
@@ -149,7 +192,7 @@ const RegisterStudent = (props) => {
                         >
                         {
                             types.map(item => 
-                                <option key={item.id} value={item.id}>{item.label}</option>
+                                <option key={item.id} value={item.label}>{item.label}</option>
                             )
                         }
                             {/* <option value={type} selected>Student</option>
@@ -157,9 +200,14 @@ const RegisterStudent = (props) => {
                         </select>
                     </div>
                     <div className="text-center">
-                        <button type="button" className="btn btn-light mr-1" onClick={() => handleRegister()}>Submit</button>
+                        <button type="submit" className="btn btn-light mr-1">Submit</button>
                         <button type="button" className="btn btn-light" onClick={() => props.history.push("/")}>Cancel</button>
                     </div>
+                    {isError && (
+                    <div className="alert alert-danger mt-4" role="alert">
+                        {msg}
+                    </div>
+                )}
                 </form>
             </div>
         </Fragment>
