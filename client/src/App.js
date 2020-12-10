@@ -10,6 +10,9 @@ import Login from "./components/login";
 import Register from "./components/students/registerStudent";
 import Main from "./components/main";
 import Student from "./components/students/student";
+import RegisterStudent from "./components/students/registerStudent";
+
+import RegisterTeacher from "./components/teachers/registerTeacher";
 
 function App() {
   return (
@@ -20,6 +23,8 @@ function App() {
           <Route path="/register" component={Register} />
           <Route path="/main" component={Main} />
           <Route path="/student" component={Student} />
+          <Route path="/register-student" component={RegisterStudent} />
+          <Route path="/register-teacher" component={RegisterTeacher} />
         </Switch>
       </AppState>
     </Router>

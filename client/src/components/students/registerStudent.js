@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect, useContext } from 'react';
 import AppContext from "../../context/appContext";
 
 const RegisterStudent = (props) => {
-    const {  } = useContext(AppContext)
+    const { registerStudent } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [firstname, setFirstname] = useState("")
@@ -14,26 +14,42 @@ const RegisterStudent = (props) => {
     const [type, setType] = useState("")
 
     const types = [
+        {id:"0", label:"--Select--"},
         {id:"1", label:"Normal"},
         {id:"2", label:"Special"}
     ];
 
     const levels = [
+        {id:"0", label:"-- Select --"},
         {id:"1", label:"1"},
         {id:"2", label:"2"},
         {id:"3", label:"3"},
         {id:"4", label:"4"},
     ];
 
-    // useEffect(() => {
-    //     console.log(type)
-    //     return () => {
-    //         console.log("Clean")
-    //     }
-    // }, [type])
+    useEffect(() => {
+        // console.log(type.type)
+    }, [type])
+
+    useEffect(() => {
+        // console.log(type.type)
+    }, [level])
 
     const handleRegister = () => {
-        
+        console.log(level) 
+        console.log(type)
+        const data ={
+            username,
+            password,
+            firstname, 
+            lastname, 
+            birthday, 
+            faculty, 
+            major,
+            level:level.level,
+            type:type.type
+        };
+        registerStudent(data);
     }
 
     return (

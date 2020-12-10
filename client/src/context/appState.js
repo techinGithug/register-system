@@ -32,7 +32,7 @@ const AppState = (props) => {
     };
 
     const registerStudent = (data) => {
-
+        console.log(data)
     };
 
     // Logout
