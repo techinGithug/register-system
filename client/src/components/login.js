@@ -3,14 +3,18 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 import AppContext from "../context/appContext";
 
 const Login = ( props ) => {
-    const { response, types, login } = useContext(AppContext)
-    const [username, setUsername] = useState()
-    const [password, setPassword] = useState()
-    const [type, setType] = useState()
-    const [token, setToken] = useState()
+    const { response, login } = useContext(AppContext)
+    const [username, setUsername] = useState("")
+    const [password, setPassword] = useState("")
+    const [type, setType] = useState({type: "1"})
+
+    const types = [
+        {id:"1", label:"Student"},
+        {id:"2", label:"Teacher"}
+    ]
 
     useEffect(() => {
-        
+        // console.log("Type... ",type.type)
     }, [type]);
 
     const handleRegister = () => {
@@ -19,23 +23,41 @@ const Login = ( props ) => {
 
     const handleLogin = () => {
         if(username !== "" && password !== "") {
-            response.map(item => {
-                if(username === item.username && password === item.password) {
-                    let token = genToken()
-                    const authLogin = {
-                        "token": token,
-                        "login": true
-                    }
-                    login(authLogin)
-                    props.history.push("/main")
-                    return
+            let haveUser = checkUser()
+            if(haveUser) {
+                const id = type.type
+                if(id === "1") { // 1 is student
+                    props.history.push("/student")
                 }
-            });
+                if(id === "2") { // 2 is teacher
+                    
+                    // props.history.push("/teacher")
+                }
+
+            } else {
+
+            }
         
         } else {
             // login(false)
         }
-        
+    }
+
+    const checkUser = () => {
+        let res = false
+        response.map(item => {
+            if(username === item.username && password === item.password) {
+                let token = genToken()
+                const authLogin = {
+                    "token": token,
+                    "isLogin": true
+                }
+                login(authLogin)
+                // props.history.push("/main")
+                res = true
+            }
+        });
+        return res
     }
 
     const genToken = () => {
@@ -56,45 +78,44 @@ const Login = ( props ) => {
         <div className="w-25 mx-auto mt-5">
             <form className="form align-middle">
                 <div className="form-group">
-                    <label for="username">Username</label>
+                    <label>Username</label>
                     <input 
                         type="text" 
                         className="form-control" 
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
+                        required
                     />
                 </div>
                 <div className="form-group">
-                    <label for="password">Password</label>
+                    <label>Password</label>
                     <input 
                         type="password" 
                         className="form-control"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        required
                     />
                 </div>
 
-                <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                        <label className="input-group-text" for="inputGroupType">Types</label>
-                    </div>
-                    <select className="custom-select" id="inputGroupType"
+                <div className="form-group">
+                    <label>Type</label>
+                    <select className="custom-select"
                         onChange={(e) => setType({ type: e.target.value })}
                     >
-                        {
-                            types.map(type => (
-                                <option key={type.id} value={type.id}>{type.label}</option>
-                            ))
-                        }
-                        
+                    {
+                        types.map(item => 
+                            <option key={item.id} value={item.id}>{item.label}</option>
+                        )
+                    }
                         {/* <option value={type} selected>Student</option>
                         <option value={type}>Teacher</option> */}
                     </select>
                 </div>
 
                 <div className="text-center">
-                    <button type="button" className="btn btn-secondary mr-1" onClick={() => handleLogin()}>Login</button>
-                    <button type="button" className="btn btn-secondary" onClick={() => handleRegister()}>Register</button>
+                    <button type="button" className="btn btn-light mr-1" onClick={() => handleLogin()}>Login</button>
+                    <button type="button" className="btn btn-light" onClick={() => handleRegister()}>Register</button>
                 </div>
             </form>
         </div>

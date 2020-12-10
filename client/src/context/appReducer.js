@@ -1,4 +1,3 @@
-import { act } from "react-dom/test-utils";
 import { 
     ADD_STUDENT, 
     UPDATE_STUDENT, 
@@ -6,33 +5,20 @@ import {
     ADD_TEACHER, 
     UPDATE_TEACHER,
     DELETE_TEACHER,
-    LOGIN,
     LOGOUT,
     REGISTER,
     AUTHEN_LOGIN
  } from "../context/appAction";
- import appContext from "../context/appContext";
 
  const appReducer = (state, action) => {
-    //  console.log(action)
     switch(action.type) {
         case AUTHEN_LOGIN :
             return {
                 ...state,
-                authenLogin: {token: action.payload.token, login: action.payload.login}
+                authenLogin: {token: action.payload.token, isLogin: action.payload.isLogin}
             };
         
         case ADD_STUDENT :
-            return {
-
-            };
-
-        case UPDATE_STUDENT :
-            return {
-
-            };
-
-        case DELETE_STUDENT :
             return {
 
             };
@@ -41,8 +27,8 @@ import {
             return {
 
             };
-
-        case UPDATE_TEACHER :
+    
+        case DELETE_STUDENT :
             return {
 
             };
@@ -52,12 +38,18 @@ import {
 
             };
 
-        case LOGIN:
-            return{
+        case LOGOUT: 
+            return {
+                ...state,
+                authenLogin: {token:"", isLogin:false}
+            };
+
+        case UPDATE_TEACHER :
+            return {
 
             };
 
-        case LOGOUT: 
+        case UPDATE_STUDENT :
             return {
 
             };

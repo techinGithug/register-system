@@ -21,11 +21,13 @@ const InitialState = {
     register:[],
     students:[],
     teachers:[],
-    types:[
-        {id:"1", label:"Student"},
-        {id:"2", label:"Teacher"}
-        // {id:"3", label:"Admin"}
-    ],
+
+    // Type for login
+    // types:[
+    //     {id:"1", label:"Student"},
+    //     {id:"2", label:"Teacher"}
+    //     // {id:"3", label:"Admin"}
+    // ],
     response:[
         {   
             id:1,

@@ -1,6 +1,6 @@
 import React, { useReducer } from "react";
 import AppContext from "../context/appContext";
-import appReducer from "../context/appReducer";
+import AppReducer from "../context/appReducer";
 import InitialState from "../context/initialState";
 import { 
     AUTHEN_LOGIN,
@@ -9,11 +9,12 @@ import {
     DELETE_STUDENT, 
     ADD_TEACHER,
     UPDATE_TEACHER,
-    DELETE_TEACHER
+    DELETE_TEACHER,
+    LOGOUT
 } from "../context/appAction";
 
 const AppState = (props) => {
-    const [state, dispatch] = useReducer(appReducer, InitialState)
+    const [state, dispatch] = useReducer(AppReducer, InitialState)
     // Add student
 
     // Update student
@@ -22,13 +23,24 @@ const AppState = (props) => {
 
     // Authen login
     const login = (authLogin) => {
-        authLogin.login && (
+        authLogin.isLogin && (
             dispatch({
                 type: AUTHEN_LOGIN,
                 payload: authLogin
             })
         )
-    }
+    };
+
+    const registerStudent = (data) => {
+
+    };
+
+    // Logout
+    const logout = () => {
+        dispatch({
+            type: LOGOUT
+        })
+    };
 
     return (
         <AppContext.Provider value={{
@@ -38,10 +50,12 @@ const AppState = (props) => {
             response: state.response,
             students: state.students,
             teachers: state.teachers,
-            types: state.types,
+            // types: state.types,
             
             // Action
-            login
+            login,
+            registerStudent,
+            logout
             
         }}
         >
