@@ -1,22 +1,33 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { IoPersonCircleOutline } from "react-icons/io5";
+import { IoAirplane, IoPersonCircleOutline } from "react-icons/io5";
 import AppContext from "../context/appContext";
+import Webconfig from '../api/web-config';
+
 
 const Login = ( props ) => {
     const { students, login } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [type, setType] = useState({type: "1"})
-    const [isError, setIsError] = useState(false);
+    const [isError, setIsError] = useState(false)
+    const [message, setMessage] = useState("")
 
     const types = [
         {id:"1", label:"Student"},
         {id:"2", label:"Teacher"}
-    ]
+    ];
 
     useEffect(() => {
-        // console.log("Type... ",type.type)
-    }, [type, isError]);
+
+    }, [type, isError]);    
+
+    // const init = async () => {
+    //     const res = await fetch(Webconfig.getAllAdmin(), {
+    //         method:"GET"
+    //     });
+    //     const jsonData = await res.json()
+    //     console.log(jsonData)
+    // }
 
     const handleRegister = () => {
         const id = type.type
@@ -28,46 +39,92 @@ const Login = ( props ) => {
         }
     }
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault()
         if(username !== "" && password !== "") {
             const id = type.type
             if(id === "1") { // 1 is student
-                let isFound = checkStudent()
-                if(isFound) {
-                    props.history.push("/student")
+                try {
+                    const res = await fetch(Webconfig.getStudentByUsername(username), {
+                        method:"GET"
+                    });
+                    const jsonData = await res.json()
+                    // console.log(jsonData[0])
+                    if(jsonData.length > 0) {
+                        const {username: user, password: pass } = jsonData[0]
+                        // console.log(id +" "+ user)
+                        if(username === user && password === pass) {
+                            let token = genToken()
+                            const authLogin = {
+                                token: token,
+                                isLogin: true,
+                                userData: jsonData[0]
+                            }
+                            login(authLogin)
+                            props.history.push("/student")
+                        } else {
+                            setMessage("Username or password incorrect!")
+                            setIsError(true)
+                            setTimeOut()
+                        }
+
+                    } else {
+                        // console.log("No data...")
+                        setMessage("This user not found!")
+                        setIsError(true)
+                        setTimeOut()
+                    }
+
+                } catch (err) {
+                    // console.error(err)
+                    setMessage("This user not found!")
+                    setIsError(true)
+                    setTimeOut()
                 }
-            }
-            if(id === "2") { // 2 is teacher
                 
+            } else  if(id === "2") { // 2 is teacher
                 // props.history.push("/teacher")
+
+            } else { // Not 1 or 2 is amdin
+
             }
         
         } else {
             setIsError(true)
-            setTimeout(() => {
-                setIsError(false)
-            }, 5000);
+            // setTimeout(() => {
+            //     setIsError(false)
+            // }, 5000);
+            setTimeOut()
         }
     }
 
-    const checkStudent = () => {
-        let res = false
-        students.map(item => {
-            if(username === item.username && password === item.password) {
-                let token = genToken()
-                const authLogin = {
-                    token: token,
-                    isLogin: true,
-                    id:item.id
-                }
-                login(authLogin)
-                // props.history.push("/main")
-                res = true
-            }
-        });
-        return res
+    const setTimeOut = () => {
+        setTimeout(() => {
+            setIsError(false)
+        }, 5000);
     }
+
+    // const checkUser = () => {
+    //     for(let i = 0; i < user.length; i++) {
+    //         console.log(">>>>> ",i)
+    //     }
+    //     // console.log(user[0])
+    //     // let res = false
+        
+    //     // user.map(item => {
+    //     //     if(username === item.username && password === item.password) {
+    //     //         let token = genToken()
+    //     //         const authLogin = {
+    //     //             token: token,
+    //     //             isLogin: true,
+    //     //             id:item.id
+    //     //         }
+    //     //         login(authLogin)
+    //     //         res = true
+    //     //     }
+    //     // });
+    //     // return res
+    // }
 
     const genToken = () => {
         let pass = ""; 
@@ -129,7 +186,7 @@ const Login = ( props ) => {
                 </div>
                 {isError && (
                     <div className="alert alert-danger mt-4" role="alert">
-                        Username or password incorrect!
+                        {message}
                     </div>
                 )}
                

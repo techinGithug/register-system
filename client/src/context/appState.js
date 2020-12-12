@@ -54,7 +54,7 @@ const AppState = (props) => {
             register: state.register,
             students: state.students,
             teachers: state.teachers,
-            // types: state.types,
+            userData: state.userData,
             
             // Action
             login,

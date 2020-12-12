@@ -18,7 +18,7 @@ import {
                 authenLogin: {
                     token: action.payload.token, 
                     isLogin: action.payload.isLogin,
-                    id: action.payload.id
+                    userData: action.payload.userData
                 }
             };
         
@@ -45,7 +45,7 @@ import {
         case LOGOUT: 
             return {
                 ...state,
-                authenLogin: {token:"", isLogin:false, id:""}
+                authenLogin: {token:"", isLogin:false, userData:[]}
             };
 
         case UPDATE_TEACHER :

@@ -78,7 +78,8 @@ const InitialState = {
     //         username:"test2",
     //         password:"1234"
     //     }
-    // ]
+    // ];
+    userData: []
 };
 
 export default InitialState;
