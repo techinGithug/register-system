@@ -1,6 +1,31 @@
-.form {
+/* Element hover */
+.hover-default {
+}
+.hover-default:hover {
+  cursor: pointer;
 }
 
-.w-10 {
-  width: 10%;
+.hover-grey {
+  color: #566573;
+}
+.hover-grey:hover {
+  cursor: pointer;
+  color: #abb2b9;
+}
+
+/* Icon size */
+.ics-1 {
+  font-size: 16px;
+}
+.ics-2 {
+  font-size: 18px;
+}
+.ics-3 {
+  font-size: 20px;
+}
+.ics-4 {
+  font-size: 22px;
+}
+.ics-5 {
+  font-size: 24px;
 }

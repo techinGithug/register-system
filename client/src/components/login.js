@@ -5,7 +5,7 @@ import Webconfig from '../api/web-config';
 
 
 const Login = ( props ) => {
-    const { students, login } = useContext(AppContext)
+    const { login } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [type, setType] = useState({type: "1"})
@@ -14,20 +14,13 @@ const Login = ( props ) => {
 
     const types = [
         {id:"1", label:"Student"},
-        {id:"2", label:"Teacher"}
+        {id:"2", label:"Teacher"}, 
+        {id:"3", label:"Admin"}
     ];
 
     useEffect(() => {
 
     }, [type, isError]);    
-
-    // const init = async () => {
-    //     const res = await fetch(Webconfig.getAllAdmin(), {
-    //         method:"GET"
-    //     });
-    //     const jsonData = await res.json()
-    //     console.log(jsonData)
-    // }
 
     const handleRegister = () => {
         const id = type.type
@@ -48,55 +41,150 @@ const Login = ( props ) => {
                     const res = await fetch(Webconfig.getStudentByUsername(username), {
                         method:"GET"
                     });
-                    const jsonData = await res.json()
-                    // console.log(jsonData[0])
-                    if(jsonData.length > 0) {
-                        const {username: user, password: pass } = jsonData[0]
-                        // console.log(id +" "+ user)
-                        if(username === user && password === pass) {
-                            let token = genToken()
-                            const authLogin = {
-                                token: token,
-                                isLogin: true,
-                                userData: jsonData[0]
+                    const { status, statusText, ok, url } = res
+                    if(ok) {
+                        const jsonData = await res.json()
+                        if(jsonData.length > 0) {
+                            const {std_username: user, std_password: pass, is_block } = jsonData[0]
+                            if(username === user && password === pass) {
+                                if(is_block === "1") {
+                                    setMessage("This user was blocked")
+                                    setIsError(true)
+                                    setTimeOut()
+                                } else {
+                                    let token = genToken()
+                                    const authLogin = {
+                                    token: token,
+                                    isLogin: true,
+                                    userData: jsonData[0]
+                                }
+                                login(authLogin)
+                                // setLocalStorage(authLogin)
+                                props.history.push("/student")
+                                }
+                                
+                            } else {
+                                setMessage("Username or password incorrect!")
+                                setIsError(true)
+                                setTimeOut()
                             }
-                            login(authLogin)
-                            props.history.push("/student")
+    
                         } else {
-                            setMessage("Username or password incorrect!")
+                            // console.log("No data...")
+                            setMessage("This user not found!")
                             setIsError(true)
                             setTimeOut()
                         }
 
-                    } else {
-                        // console.log("No data...")
-                        setMessage("This user not found!")
+                    } else if(!ok) {
+                        console.log(`${status} ${statusText} this ${url}`)
+                        setMessage(`${status} ${statusText}`)
                         setIsError(true)
                         setTimeOut()
                     }
 
                 } catch (err) {
-                    // console.error(err)
-                    setMessage("This user not found!")
-                    setIsError(true)
-                    setTimeOut()
+                    // console.log(err.message)
+                    // setMessage(`Info : ${err.message}`)
+                    // setIsError(true)
+                    // setTimeOut()
                 }
                 
             } else  if(id === "2") { // 2 is teacher
-                // props.history.push("/teacher")
+                try {
+                    const res = await fetch(Webconfig.getTeacherByUsername(username), {
+                        method: "GET"
+                    });
+                    const { status, statusText, ok, url } = res
+                    if(ok) {
+                        const jsonData = await res.json()
+                        if(jsonData.length > 0) {
+                            const { t_username: user, t_password: pass} = jsonData[0]
+                            if(username === user && password === pass) {
+                                let token = genToken()
+                                const authLogin = {
+                                    token: token,
+                                    isLogin: true,
+                                    userData: jsonData[0]
+                                }
+                                login(authLogin)
+                                // setLocalStorage(authLogin)
+                                props.history.push("/teacher")
 
-            } else { // Not 1 or 2 is amdin
+                            } else {
+                                setMessage("Username or password incorrect!")
+                                setIsError(true)
+                                setTimeOut()
+                            }
+                        }
 
+                    } else if(!ok){
+                        console.log(`${status} ${statusText} this ${url}`)
+                        setMessage(`${status} ${statusText}`)
+                        setIsError(true)
+                        setTimeOut()
+                    }
+                    
+                } catch (err) {
+                    // console.log(err.message)
+                    // setMessage(`Info : ${err.message}`)
+                    // setIsError(true)
+                    // setTimeOut()
+                }
+
+            } else if(id === "3") { // 3 is admin
+                try {
+                    const res = await fetch(Webconfig.getAdminByUsername(username), {
+                        method: "GET"
+                    });
+                    const { status, statusText, ok, url } = res
+                    if(ok) {
+                        const jsonData = await res.json()
+                        if(jsonData.length > 0) {
+                            const { am_username: user, am_password: pass} = jsonData[0]
+                            if(username === user && password === pass) {
+                                let token = genToken()
+                                const authLogin = {
+                                    token: token,
+                                    isLogin: true,
+                                    userData: jsonData[0]
+                                }
+                                login(authLogin)
+                                // setLocalStorage(authLogin)
+                                props.history.push("/admin")
+
+                            } else {
+                                setMessage("Username or password incorrect!")
+                                setIsError(true)
+                                setTimeOut()
+                            }
+                        }
+
+                    } else if(!ok){
+                        console.log(`${status} ${statusText} this ${url}`)
+                        setMessage(`${status} ${statusText}`)
+                        setIsError(true)
+                        setTimeOut()
+                    }
+                    
+                } catch (err) {
+                    // console.log(err.message)
+                    // setMessage(`Info : ${err.message}`)
+                    // setIsError(true)
+                    // setTimeOut()
+                }
             }
         
         } else {
             setIsError(true)
-            // setTimeout(() => {
-            //     setIsError(false)
-            // }, 5000);
+            setMessage("Please enter username and password before!")
             setTimeOut()
         }
     }
+
+    // const setLocalStorage = (data) => {
+    //     localStorage.setItem("user", JSON.stringify(data))
+    // }
 
     const setTimeOut = () => {
         setTimeout(() => {
@@ -104,37 +192,13 @@ const Login = ( props ) => {
         }, 5000);
     }
 
-    // const checkUser = () => {
-    //     for(let i = 0; i < user.length; i++) {
-    //         console.log(">>>>> ",i)
-    //     }
-    //     // console.log(user[0])
-    //     // let res = false
-        
-    //     // user.map(item => {
-    //     //     if(username === item.username && password === item.password) {
-    //     //         let token = genToken()
-    //     //         const authLogin = {
-    //     //             token: token,
-    //     //             isLogin: true,
-    //     //             id:item.id
-    //     //         }
-    //     //         login(authLogin)
-    //     //         res = true
-    //     //     }
-    //     // });
-    //     // return res
-    // }
-
     const genToken = () => {
         let pass = ""; 
         let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +  
                 'abcdefghijklmnopqrstuvwxyz0123456789@#$'; 
           
         for (let i = 1; i <= 15; i++) { 
-            var char = Math.floor(Math.random() 
-                        * str.length + 1); 
-              
+            var char = Math.floor(Math.random() * str.length + 1); 
             pass += str.charAt(char) 
         } 
         return pass

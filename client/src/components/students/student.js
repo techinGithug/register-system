@@ -11,6 +11,7 @@ const Student = (props) => {
     const [confirmPassword, setConfirmPassword] = useState("")
     const [message, setMessage] = useState("")
     const [isError, setIsErrro] = useState(false)
+    const [isSuccess, setIsSuccess] = useState(false)
     // console.log(authenLogin)
 
     useEffect(() => {
@@ -22,19 +23,27 @@ const Student = (props) => {
     }, [data])
 
     const init = async () => {
-        if(authenLogin.length === 0) {
+        // if(authenLogin.length === 0) {
+        const getStorage = JSON.parse(localStorage.getItem("user"))
+        if(getStorage === null) {
             props.history.push("/") 
         } else {
-            const { id } = authenLogin.userData
+            const { id } = getStorage.userData
             const res = await fetch(Webconfig.getStudentById(id), {
                 method: "GET"
             });
-            const jsonData = await res.json()
-            if(jsonData.length > 0) {
-               setData(jsonData[0])
+            const { status, statusText, ok, url } = res
+            if(ok) {
+                const jsonData = await res.json()
+                if(jsonData.length > 0) {
+                   setData(jsonData[0])
+                }
+            } else if(!ok) {
+                console.log(`${status} ${statusText} this ${url}`)
             }
+           
         }
-    }
+    };
 
     const handleUpdate = async (e) => {
         e.preventDefault()
@@ -43,32 +52,45 @@ const Student = (props) => {
         if(isValid) {
             try {
                 const res = await fetch(Webconfig.updateStudentById(id), {
-                    method: "UPDATE",
+                    method: "PUT",
                     headers: {
                         "Content-Type":"application/json",
-                        "Access-Control-Allow-Origin":"*",
-                        'Access-Control-Allow-Methods':'POST, UPDATE, PUT'
+                        // "Access-Control-Allow-Origin":"*",
                     },
                     body: JSON.stringify({
                         password: newPassword
                     })
                 });
-                const jsonData = await res.json()
-                console.log(jsonData)
+                const { status, statusText, ok, url } = res
+                if(ok) {
+                    const jsonData = await res.json()
+                    const { message } = jsonData
+                    if(message !== "") {
+                        setIsSuccess(true)
+                        setMessage(message)
+                        setTimeOutSuccess()
+                    }
+                    init()
+
+                } else if(!ok) {
+                    console.log(`${status} ${statusText} this ${url}`)
+                }
+                
             } catch (err) {
-                setMessage(err.message)
-                setIsErrro(true)
-                setTimeOut()
+                // console.log(err.message)
+                // setMessage(err.message)
+                // setIsErrro(true)
+                // setTimeOut()
             }
             
         }
     }
 
     const checkData = () => {
-        const { password: oldPass } = data
+        const { std_password: oldPass } = data
         let res = false
         if(oldPassword !== oldPass) {
-            setMessage("New password not match oldpassword!")
+            setMessage("Old password incorrect!")
             setIsErrro(true)
             setTimeOut()
         } else if(newPassword !== confirmPassword) {
@@ -87,7 +109,13 @@ const Student = (props) => {
         }, 5000);
     }
 
-    const handleLogout = async () => {
+    const setTimeOutSuccess = () => {
+        setTimeout(() => {
+            setIsSuccess(false)
+        }, 5000);
+    }
+
+    const handleLogout = () => {
         logout()
         props.history.push("/")
         window.location.reload();
@@ -110,12 +138,6 @@ const Student = (props) => {
             <div className="container">
                 <div className="mt-3 w-75 mx-auto">
                     <div className="d-flex flex-row-reverse mb-2">
-                        {/* <button 
-                            className="btn btn-light"
-                            onClick={() => handleEditAccount()}
-                        >Edit account
-                        </button> */}
-
                         <button 
                             type="button" 
                             className="btn btn-light" 
@@ -125,25 +147,56 @@ const Student = (props) => {
                         </button>
 
                     </div>
+                    {/* <h3 className="text-center">Personal detials</h3> */}
                     <table className="table table-bordered">
                         <tbody>
                             <tr>
-                                <th width="90">Name</th>
-                                <td>{data.firstname}</td>
-                                <th width="90">Birthday</th>
-                                <td>{data.birthday}</td>
+                                <th width="90">Username</th>
+                                <td>
+                                    <form>
+                                        <input type="password" value={data.std_username} />
+                                    </form>
+                                </td>
+                                <th width="90">Password</th>
+                                <td>
+                                    <form>
+                                        <input type="password" value={data.std_password} />
+                                    </form>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td>{data.std_firstname} {data.std_lastname}</td>
+                                <th>Gender</th>
+                                <td>{data.std_gender}</td>
+                            </tr>
+                            <tr>
+                                <th>Age</th>
+                                <td>{data.std_age}</td>
+                                <th>Birthday</th>
+                                <td>{data.std_birthday}</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>{data.std_phone}</td>
+                                <th>Email</th>
+                                <td>{data.std_email}</td>
                             </tr>
                             <tr>
                                 <th>Faculty</th>
-                                <td>{data.faculty}</td>
+                                <td>{data.std_faculty}</td>
                                 <th>Major</th>
-                                <td>{data.major}</td>
+                                <td>{data.std_major}</td>
                             </tr>
                             <tr>
                                 <th>Level</th>
-                                <td>{data.level}</td>
+                                <td>{data.std_level}</td>
                                 <th>Type</th>
-                                <td>{data.type}</td>
+                                <td>{data.std_type}</td>
+                            </tr>
+                            <tr>
+                                <th>Address</th>
+                                <td colSpan="3">{data.std_address}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -206,12 +259,16 @@ const Student = (props) => {
                             </div>
                         )}
 
+                        {isSuccess && (
+                            <div class="alert alert-success mt-2 mr-3 ml-3" role="alert">
+                                {message}
+                            </div>
+                        )}
+
                     </div>
                 </div>
             </div>            
-
         </Fragment>
-        
     )
 }
 

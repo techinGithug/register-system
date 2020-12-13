@@ -15,19 +15,19 @@ const mysql = require('mysql');
 
 // FOR MYSQL DB
 const mysqlConnection  = mysql.createConnection({
-    host: "127.0.0.1:3306",
+    host: "localhost",
     user: "root",
     password: "myadmin",
-    database: "geneus",
+    database: "register_system",
     multipleStatements: true
 });
 
 mysqlConnection.connect((err) => {
     if(!err) {
-        // console.log("Connection success...")
+        console.log("Connection success...")
         
     } else {
-        console.log("Connection failed..")
+        console.log("Connection failed...")
     }
 });
 

@@ -14,6 +14,10 @@ import {
     UPDATE_TEACHER
 } from "../context/appAction";
 
+ const setLocalStorage = (data) => {
+    localStorage.setItem("user", JSON.stringify(data))
+}
+
 const AppState = (props) => {
     const [state, dispatch] = useReducer(AppReducer, InitialState)
     // Add student
@@ -24,12 +28,11 @@ const AppState = (props) => {
 
     // Authen login
     const login = (authLogin) => {
-        authLogin.isLogin && (
-            dispatch({
-                type: AUTHEN_LOGIN,
-                payload: authLogin
-            })
-        )
+        setLocalStorage(authLogin)
+        dispatch({
+            type: AUTHEN_LOGIN,
+            payload: authLogin
+        })
     };
 
     const registerStudent = (data) => {
@@ -41,10 +44,19 @@ const AppState = (props) => {
 
     // Logout
     const logout = () => {
+        clearLocalStorage()
         dispatch({
             type: LOGOUT
         })
     };
+
+    const setLocalStorage = (data) => {
+        localStorage.setItem("user", JSON.stringify(data))
+    }
+
+    const clearLocalStorage = () => {
+        localStorage.removeItem("user")
+    }
 
     return (
         <AppContext.Provider value={{
