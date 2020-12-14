@@ -1,7 +1,7 @@
 const Webconfig = {
     "rootUrl":"http://localhost:5000",
 
-    // Admin
+    // Admin //
     getAllAdmin: function(){
         return this.rootUrl+`/admins`
     },
@@ -22,7 +22,8 @@ const Webconfig = {
         return this.rootUrl+`/admins/unblockStudent/${id}`
     },
 
-    // Student
+
+    // Student //
     getAllStudents: function() {
         return this.rootUrl+`/students`
     },
@@ -39,11 +40,20 @@ const Webconfig = {
         return this.rootUrl+`/students/getByUsername/${username}`
     },
 
+    getLastStudentId: function() {
+        return this.rootUrl+`/students/getLastStudentId`
+    },
+
+    insertStudent: function() {
+        return this.rootUrl+`/students/insert`
+    },
+
     updateStudentById: function(id) {
         return this.rootUrl+`/students/updateById/${id}`
     },
 
-    // Teacher
+
+    // Teacher //
     getAllTeachers: function() {
         return this.rootUrl+`/teachers`
     },
@@ -60,12 +70,14 @@ const Webconfig = {
         return this.rootUrl+`/teachers/updateById/${id}`
     },
 
-    // Subject
+
+    // Subject //
     getAllSubjects: function() {
         return this.rootUrl+`/subjects`
     },
 
-    // Message
+
+    // Message //
     getAllMessages: function() {
         return this.rootUrl+`/messages`
     }

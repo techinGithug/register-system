@@ -64,7 +64,7 @@ app.put("/admins/unblockStudent/:id", async (req, res) => {
     })
 });
 
-// Student
+// Student //
 app.get("/students", async (req, res) => {
     const result = mysqlConnection.query("SELECT * FROM register_system.students", (err, row, data) => {
         if(!err) {
@@ -77,7 +77,7 @@ app.get("/students", async (req, res) => {
 
 app.get("/students/getByUsername/:username", async (req, res) => {
     const { username } = req.params
-    const result = await mysqlConnection.query("SELECT * FROM register_system.students WHERE std_username = ?",[username], (err, row, data) => {
+    const result = await mysqlConnection.query("SELECT * FROM register_system.register_user WHERE regist_username = ?",[username], (err, row, data) => {
         if(!err) {
             res.send(row)
         } else if(err) {
@@ -88,7 +88,7 @@ app.get("/students/getByUsername/:username", async (req, res) => {
 
 app.get("/students/getById/:id", async (req, res) => {
     const { id } = req.params
-    const result = await mysqlConnection.query("SELECT * FROM register_system.students WHERE id = ? ",[id], (err, row, data) => {
+    const result = await mysqlConnection.query("SELECT * FROM register_system.register_user WHERE id = ? ",[id], (err, row, data) => {
         if(!err) {
             res.send(row)
         } else {
@@ -110,8 +110,29 @@ app.put("/students/updateById/:id", async (req, res) => {
     });
 }); 
 
+app.get("/students/getLastStudentId", async (req, res) => {
+    const result = mysqlConnection.query("SELECT * FROM register_system.register_user WHERE regist_type = '1' order by regist_id desc limit 1", (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else {
+            res.send(err.message)
+        }
+    })
+});
 
-// Teacher
+app.post("/students/insert", async (req, res) => {
+    const { id,username, password, email, phone, type, block, status } = req.body
+    const result = mysqlConnection.query("INSERT INTO register_system.register_user (regist_id, regist_username, regist_password, regist_email, regist_phone, regist_type, is_block, regist_status) VALUES (?,?,?,?,?,?,?,?)",[id,username,password,email,phone,type,block,status], (err, data) => {
+        if(!err) {
+            data.message = "Insert student successful"
+            res.send(data)
+        } else {
+            res.send(err.message)
+        }
+    })
+});
+
+// Teacher //
 app.get("/teachers", (req, res) => {
     const result = mysqlConnection.query("SELECT * FROM register_system.teachers", (err, row, data) => {
         if(!err) {

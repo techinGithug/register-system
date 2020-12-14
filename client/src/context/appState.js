@@ -2,6 +2,7 @@ import React, { useReducer } from "react";
 import AppContext from "../context/appContext";
 import AppReducer from "../context/appReducer";
 import InitialState from "../context/initialState";
+import Webconfig from "../api/web-config";
 import { 
     ADD_STUDENT, 
     ADD_TEACHER,
@@ -35,7 +36,7 @@ const AppState = (props) => {
         })
     };
 
-    const registerStudent = (data) => {
+    const registerStudent = async (data) => {
         dispatch({
             type: REGISTER_STUDENT,
             payload: data

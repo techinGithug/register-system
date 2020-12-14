@@ -45,9 +45,9 @@ const Login = ( props ) => {
                     if(ok) {
                         const jsonData = await res.json()
                         if(jsonData.length > 0) {
-                            const {std_username: user, std_password: pass, is_block } = jsonData[0]
+                            const {regist_username: user, regist_password: pass, is_block } = jsonData[0]
                             if(username === user && password === pass) {
-                                if(is_block === "1") {
+                                if(is_block === "t") {
                                     setMessage("This user was blocked")
                                     setIsError(true)
                                     setTimeOut()

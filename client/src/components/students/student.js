@@ -25,6 +25,7 @@ const Student = (props) => {
     const init = async () => {
         // if(authenLogin.length === 0) {
         const getStorage = JSON.parse(localStorage.getItem("user"))
+        console.log(getStorage)
         if(getStorage === null) {
             props.history.push("/") 
         } else {
@@ -154,13 +155,13 @@ const Student = (props) => {
                                 <th width="90">Username</th>
                                 <td>
                                     <form>
-                                        <input type="password" value={data.std_username} />
+                                        <input type="password" value={data.std_username} readOnly />
                                     </form>
                                 </td>
                                 <th width="90">Password</th>
                                 <td>
                                     <form>
-                                        <input type="password" value={data.std_password} />
+                                        <input type="password" value={data.std_password} readOnly />
                                     </form>
                                 </td>
                             </tr>
