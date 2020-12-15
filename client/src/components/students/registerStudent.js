@@ -3,7 +3,7 @@ import AppContext from "../../context/appContext";
 import Webconfig from "../../api/web-config";
 
 const RegisterStudent = (props) => {
-    const { registerStudent } = useContext(AppContext)
+    const { registerStudent, genId, checkDuplicateUsername, checkDuplicateEmail } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [confirmPassword, setConfirmPassword] = useState("")
@@ -12,20 +12,20 @@ const RegisterStudent = (props) => {
     const [isError, setIsError] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
     const [msg, setMsg] = useState("")
- 
-    const types = [
-        {id:"0", label:"--Select--"},
-        {id:"1", label:"Normal"},
-        {id:"2", label:"Special"}
-    ];
 
-    const levels = [
-        {id:"0", label:"-- Select --"},
-        {id:"1", label:"1"},
-        {id:"2", label:"2"},
-        {id:"3", label:"3"},
-        {id:"4", label:"4"},
-    ];
+    // const types = [
+    //     {id:"0", label:"--Select--"},
+    //     {id:"1", label:"Normal"},
+    //     {id:"2", label:"Special"}
+    // ];
+
+    // const levels = [
+    //     {id:"0", label:"-- Select --"},
+    //     {id:"1", label:"1"},
+    //     {id:"2", label:"2"},
+    //     {id:"3", label:"3"},
+    //     {id:"4", label:"4"},
+    // ];
 
     // useEffect(() => {
     //     // console.log(type.type)
@@ -38,35 +38,65 @@ const RegisterStudent = (props) => {
     const handleRegister = async (e) => {
         e.preventDefault()
         let msg = "";
+        const dataUsername = {
+            "type":"1",
+            "username":username,
+        };
+        const dataEmail = {
+            "type":"1",
+            "email":email
+        };
+
+        const resCheckUsername = await checkDuplicateUsername(dataUsername)
+        // console.log(resCheckUsername)
+        const resCheckEmail = await checkDuplicateEmail(dataEmail)
+        // console.log(resCheckEmail)
+
+        let _username = ""
+        let _email = ""
+        if(resCheckUsername !== undefined) {
+            const { regist_username: username_} = resCheckUsername
+            _username = username_
+        }
+
+        if(resCheckEmail !== undefined) {
+            const { regist_email: email_} = resCheckEmail
+            _email = email_
+        }
+
         if(password !== confirmPassword) {
             msg = "Password not match"
             setMsg(msg)
+            setIsError(true)
             setTimeoutError()
 
         } else if(password.length < 6){
             msg = "Password must more 6 character"
             setMsg(msg)
+            setIsError(true)
             setTimeoutError()
 
         } else if(phone.length !== 10) {
             msg = "Phone number is 10 digit"
             setMsg(msg)
+            setIsError(true)
             setTimeoutError()
-        }
-        // else if(level === "0"){
-        //     msg = "Please select Level!";
-        //     setMsg(msg)
-        //     setTimeoutError()
 
-        // } else if(type === "0") {
-        //     msg = "Please select Type!";
-        //     setMsg(msg)
-        //     setTimeoutError()
+        } else if(username === _username) {
+            msg = "This username is duplicate"
+            setMsg(msg)
+            setIsError(true)
+            setTimeoutError()
 
-        // } 
-        else {
+        } else if(email === _email) {
+            msg = "This email is duplicate"
+            setMsg(msg)
+            setIsError(true)
+            setTimeoutError()
 
-            let id = await genStudentId()
+        } else {
+            // console.log("Saved...")
+            const id = genId()
             const data = {
                 id,
                 username,
@@ -74,7 +104,7 @@ const RegisterStudent = (props) => {
                 email,
                 phone,
                 type:"1",
-                block: "f",
+                block: "0",
                 status: "0"
             };
             const res = await fetch(Webconfig.insertStudent(), {
@@ -93,7 +123,8 @@ const RegisterStudent = (props) => {
                 setMsg(jsonData.message)
                 setIsSuccess(true)
                 setTimeOutSuccess()
-                
+                // props.history.push("/")
+
             } else if(!ok) {
                 console.error(`${status} ${statusText} this ${url}`)
             }
@@ -112,35 +143,6 @@ const RegisterStudent = (props) => {
         setConfirmPassword("")
         setEmail("")
         setPhone("")
-    }
-
-    const genStudentId = async () => {
-        const res = await fetch(Webconfig.getLastStudentId(), {
-            method: "GET"
-        });
-        const { status, statusText, ok, url } = res
-        if(ok) {
-            const jsonData = await res.json()
-            if(jsonData.length > 0) {
-                const { regist_id: id } = jsonData[0]
-                let newId = (parseInt(id)+1)
-                let genId = ""
-                if(newId < 10) {
-                    genId = "0000"+newId
-                } else if (newId < 100) {
-                    genId = "000"+newId
-                } else if(newId < 1000) {
-                    genId = "00"+newId
-                } else if(newId < 10000) {
-                    genId = "0"+newId
-                } else {
-                    genId = newId
-                }
-                return genId
-            }
-        } else if(!ok) {
-            console.error(`${status} ${statusText} this ${url}`)
-        }
     }
 
     const setTimeoutError = () => {

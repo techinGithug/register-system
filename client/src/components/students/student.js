@@ -1,10 +1,15 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react';
-import { IoPerson } from "react-icons/io5";
+import { 
+    IoPencilOutline,
+    IoSaveOutline,
+    IoCloseOutline,
+ } from "react-icons/io5";
 import AppContext from "../../context/appContext";
 import Webconfig from "../../api/web-config";
+import StudentHeader from "../headers/student-header";
 
 const Student = (props) => {
-    const { authenLogin, logout } = useContext(AppContext)
+    const { login, clearLocalStorage, setLocalStorage, getUserDataByUsername, genToken } = useContext(AppContext)
     const [data, setData] = useState([])
     const [newPassword, setNewPassword] = useState("")
     const [oldPassword, setOldPassword] = useState("")
@@ -12,37 +17,19 @@ const Student = (props) => {
     const [message, setMessage] = useState("")
     const [isError, setIsErrro] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
-    // console.log(authenLogin)
 
     useEffect(() => {
         init()
     }, [])
 
-    useEffect(() => {
-        
-    }, [data])
-
     const init = async () => {
-        // if(authenLogin.length === 0) {
         const getStorage = JSON.parse(localStorage.getItem("user"))
-        console.log(getStorage)
+        // console.log(getStorage)
+        const { token, isLogin, userData } = getStorage
         if(getStorage === null) {
             props.history.push("/") 
         } else {
-            const { id } = getStorage.userData
-            const res = await fetch(Webconfig.getStudentById(id), {
-                method: "GET"
-            });
-            const { status, statusText, ok, url } = res
-            if(ok) {
-                const jsonData = await res.json()
-                if(jsonData.length > 0) {
-                   setData(jsonData[0])
-                }
-            } else if(!ok) {
-                console.log(`${status} ${statusText} this ${url}`)
-            }
-           
+            setData(userData)
         }
     };
 
@@ -52,7 +39,7 @@ const Student = (props) => {
         const isValid = checkData()
         if(isValid) {
             try {
-                const res = await fetch(Webconfig.updateStudentById(id), {
+                const res = await fetch(Webconfig.updateUsernameAndPasswordById(id), {
                     method: "PUT",
                     headers: {
                         "Content-Type":"application/json",
@@ -71,7 +58,7 @@ const Student = (props) => {
                         setMessage(message)
                         setTimeOutSuccess()
                     }
-                    init()
+                    newLoad()
 
                 } else if(!ok) {
                     console.log(`${status} ${statusText} this ${url}`)
@@ -87,8 +74,34 @@ const Student = (props) => {
         }
     }
 
+    const newLoad = async () => {
+        clearLocalStorage()
+        const res = await getUserDataByUsername(data.regist_username)
+        const { status, statusText, ok, url } = res
+        if(ok) {
+            const jsonData = await res.json()
+            if(jsonData.length > 0) {
+                let token = genToken()
+                const authLogin = {
+                    token: token,
+                    isLogin: true,
+                    userData: jsonData[0]
+                }
+                login(authLogin)
+                await setLocalStorage(authLogin)
+                init()
+            } else {
+                console.error(`${status} ${statusText} this ${url}`)
+            }
+
+        } else {
+            console.error(`${status} ${statusText} this ${url}`)
+        }
+        
+    }
+
     const checkData = () => {
-        const { std_password: oldPass } = data
+        const { regist_password: oldPass } = data
         let res = false
         if(oldPassword !== oldPass) {
             setMessage("Old password incorrect!")
@@ -116,88 +129,40 @@ const Student = (props) => {
         }, 5000);
     }
 
-    const handleLogout = () => {
-        logout()
-        props.history.push("/")
-        window.location.reload();
-    }
-
-
     return (
         <Fragment>
             <div style={{ backgroundColor: "#EAEDED" }}>
-                <div className="container d-flex justify-content-between">
-                    <div><h2>Student || Register System</h2></div>
-                    <div className="mt-1">
-                        <button 
-                            className="btn btn-light" 
-                            onClick={() => handleLogout()}>Logout
-                        </button>
-                    </div>
-                </div>
+                <StudentHeader props={props} />
             </div>
             <div className="container">
-                <div className="mt-3 w-75 mx-auto">
-                    <div className="d-flex flex-row-reverse mb-2">
-                        <button 
-                            type="button" 
-                            className="btn btn-light" 
-                            data-toggle="modal" 
-                            data-target="#exampleModal">
-                            Edit password
-                        </button>
-
-                    </div>
-                    {/* <h3 className="text-center">Personal detials</h3> */}
+                <div className="mt-3 w-50 mx-auto">
                     <table className="table table-bordered">
                         <tbody>
-                            <tr>
-                                <th width="90">Username</th>
+                            <tr className="text-center">
+                                <th width="60">Username</th>
+                                <th width="60">Password</th>
+                                <th>#</th>
+                            </tr>
+                            <tr className="text-center">
                                 <td>
                                     <form>
-                                        <input type="password" value={data.std_username} readOnly />
+                                        <input type="password" value={data.regist_username} readOnly />
                                     </form>
                                 </td>
-                                <th width="90">Password</th>
                                 <td>
                                     <form>
-                                        <input type="password" value={data.std_password} readOnly />
+                                        <input type="password" value={data.regist_password} readOnly />
                                     </form>
                                 </td>
-                            </tr>
-                            <tr>
-                                <th>Name</th>
-                                <td>{data.std_firstname} {data.std_lastname}</td>
-                                <th>Gender</th>
-                                <td>{data.std_gender}</td>
-                            </tr>
-                            <tr>
-                                <th>Age</th>
-                                <td>{data.std_age}</td>
-                                <th>Birthday</th>
-                                <td>{data.std_birthday}</td>
-                            </tr>
-                            <tr>
-                                <th>Phone</th>
-                                <td>{data.std_phone}</td>
-                                <th>Email</th>
-                                <td>{data.std_email}</td>
-                            </tr>
-                            <tr>
-                                <th>Faculty</th>
-                                <td>{data.std_faculty}</td>
-                                <th>Major</th>
-                                <td>{data.std_major}</td>
-                            </tr>
-                            <tr>
-                                <th>Level</th>
-                                <td>{data.std_level}</td>
-                                <th>Type</th>
-                                <td>{data.std_type}</td>
-                            </tr>
-                            <tr>
-                                <th>Address</th>
-                                <td colSpan="3">{data.std_address}</td>
+                                <td>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-light" 
+                                        data-toggle="modal" 
+                                        data-target="#exampleModal">
+                                        <IoPencilOutline className="ics-3" />
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -250,8 +215,8 @@ const Student = (props) => {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="submit" className="btn btn-light">Update</button> 
-                                <button type="button" className="btn btn-light" data-dismiss="modal">Close</button>
+                                <button type="submit" className="btn btn-light"><IoSaveOutline className="ics-3" /></button> 
+                                <button type="button" className="btn btn-light" data-dismiss="modal"><IoCloseOutline className="ics-3" /></button>
                             </div>
                         </form>
                         {isError && (
@@ -261,7 +226,7 @@ const Student = (props) => {
                         )}
 
                         {isSuccess && (
-                            <div class="alert alert-success mt-2 mr-3 ml-3" role="alert">
+                            <div className="alert alert-success mt-2 mr-3 ml-3" role="alert">
                                 {message}
                             </div>
                         )}

@@ -113,10 +113,10 @@ const AdminStudent = (props) => {
                 <table className="table mt-2">
                     <thead className="text-center">
                         <tr>
-                            <th scope="col">ID</th>
+                            <th scope="col" width="50">ID</th>
                             <th scope="col">NAME</th>
-                            <th scope="col">MAJOR</th>
-                            <th scope="col" width="20">LEVEL</th>
+                            <th scope="col" width="20">AGE</th>
+                            <th scope="col" width="20">GENDER</th>
                             <th scope="col" width="180"></th>
                         </tr>
                     </thead>
@@ -126,8 +126,8 @@ const AdminStudent = (props) => {
                                 <tr key={std.id}>
                                     <td className="text-center">{std.std_id}</td>
                                     <td>{std.std_firstname} {std.std_lastname}</td>
-                                    <td>{std.std_major}</td>
-                                    <td className="text-center">{std.std_level}</td>
+                                    <td>{std.std_age}</td>
+                                    <td className="text-center">{std.std_gender}</td>
                                     <td className="text-center">
                                         <button className="btn btn-light mr-1" onClick={() => handleUpdate()}><IoPencilOutline className="ics-3" /></button>
                                         <button className="btn btn-light mr-1" onClick={() => handleDelete()}><IoTrashOutline className="ics-3 text-danger" /></button>

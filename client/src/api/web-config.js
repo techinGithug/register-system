@@ -52,7 +52,6 @@ const Webconfig = {
         return this.rootUrl+`/students/updateById/${id}`
     },
 
-
     // Teacher //
     getAllTeachers: function() {
         return this.rootUrl+`/teachers`
@@ -80,8 +79,24 @@ const Webconfig = {
     // Message //
     getAllMessages: function() {
         return this.rootUrl+`/messages`
-    }
+    },
 
+    // Other //
+    checkDuplicateUsername: function(username) {
+        return this.rootUrl+`/others/checkDuplicateUsername/${username}`
+    },
+
+    checkDuplicateEmail: function(email) {
+        return this.rootUrl+`/others/checkDuplicateEmail/${email}`
+    },
+
+    getUserDataByUsername: function(username) {
+        return this.rootUrl+`/others/getUserDataByUsername/${username}`
+    },
+
+    updateUsernameAndPasswordById: function(id) {
+        return this.rootUrl+`/others/updateUsernameAndPasswordById/${id}`
+    }
 }
 
 export default Webconfig;

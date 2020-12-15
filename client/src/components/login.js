@@ -5,7 +5,7 @@ import Webconfig from '../api/web-config';
 
 
 const Login = ( props ) => {
-    const { login } = useContext(AppContext)
+    const { login, getUserDataByUsername, genToken } = useContext(AppContext)
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
     const [type, setType] = useState({type: "1"})
@@ -19,7 +19,7 @@ const Login = ( props ) => {
     ];
 
     useEffect(() => {
-
+        
     }, [type, isError]);    
 
     const handleRegister = () => {
@@ -37,99 +37,82 @@ const Login = ( props ) => {
         if(username !== "" && password !== "") {
             const id = type.type
             if(id === "1") { // 1 is student
-                try {
-                    const res = await fetch(Webconfig.getStudentByUsername(username), {
-                        method:"GET"
-                    });
-                    const { status, statusText, ok, url } = res
-                    if(ok) {
-                        const jsonData = await res.json()
-                        if(jsonData.length > 0) {
-                            const {regist_username: user, regist_password: pass, is_block } = jsonData[0]
-                            if(username === user && password === pass) {
-                                if(is_block === "t") {
-                                    setMessage("This user was blocked")
-                                    setIsError(true)
-                                    setTimeOut()
-                                } else {
-                                    let token = genToken()
-                                    const authLogin = {
-                                    token: token,
-                                    isLogin: true,
-                                    userData: jsonData[0]
-                                }
-                                login(authLogin)
-                                // setLocalStorage(authLogin)
-                                props.history.push("/student")
-                                }
-                                
-                            } else {
-                                setMessage("Username or password incorrect!")
+                const res = await getUserDataByUsername(username)
+                // console.log(res)
+                const { status, statusText, ok, url } = res
+                if(ok) {
+                    const jsonData = await res.json()
+                    if(jsonData.length > 0) {
+                        const {regist_username: user, regist_password: pass, is_block } = jsonData[0]
+                        if(username === user && password === pass) {
+                            if(is_block === "1") {
+                                setMessage("This user was blocked")
                                 setIsError(true)
                                 setTimeOut()
+                            } else {
+                                let token = genToken()
+                                const authLogin = {
+                                token: token,
+                                isLogin: true,
+                                userData: jsonData[0]
                             }
-    
+                            login(authLogin)
+                            props.history.push("/student")
+                            }
+                            
                         } else {
-                            // console.log("No data...")
-                            setMessage("This user not found!")
+                            setMessage("Username or password incorrect!")
                             setIsError(true)
                             setTimeOut()
                         }
 
-                    } else if(!ok) {
-                        console.log(`${status} ${statusText} this ${url}`)
-                        setMessage(`${status} ${statusText}`)
+                    } else {
+                        // console.log("No data...")
+                        setMessage("This user not found!")
                         setIsError(true)
                         setTimeOut()
                     }
 
-                } catch (err) {
-                    // console.log(err.message)
-                    // setMessage(`Info : ${err.message}`)
-                    // setIsError(true)
-                    // setTimeOut()
+                } else if(!ok) {
+                    console.log(`${status} ${statusText} this ${url}`)
+                    setMessage(`${status} ${statusText}`)
+                    setIsError(true)
+                    setTimeOut()
                 }
-                
+               
             } else  if(id === "2") { // 2 is teacher
-                try {
-                    const res = await fetch(Webconfig.getTeacherByUsername(username), {
-                        method: "GET"
-                    });
-                    const { status, statusText, ok, url } = res
-                    if(ok) {
-                        const jsonData = await res.json()
-                        if(jsonData.length > 0) {
-                            const { t_username: user, t_password: pass} = jsonData[0]
-                            if(username === user && password === pass) {
-                                let token = genToken()
-                                const authLogin = {
-                                    token: token,
-                                    isLogin: true,
-                                    userData: jsonData[0]
-                                }
-                                login(authLogin)
-                                // setLocalStorage(authLogin)
-                                props.history.push("/teacher")
-
-                            } else {
-                                setMessage("Username or password incorrect!")
-                                setIsError(true)
-                                setTimeOut()
+                // const res = await fetch(Webconfig.getTeacherByUsername(username), {
+                //     method: "GET"
+                // });
+                const res = await getUserDataByUsername(username)
+                const { status, statusText, ok, url } = res
+                if(ok) {
+                    const jsonData = await res.json()
+                    if(jsonData.length > 0) {
+                        const { regist_username: user, regist_password: pass} = jsonData[0]
+                        if(username === user && password === pass) {
+                            let token = genToken()
+                            const authLogin = {
+                                token: token,
+                                isLogin: true,
+                                userData: jsonData[0]
                             }
-                        }
+                            login(authLogin)
+                            // setLocalStorage(authLogin)
+                            props.history.push("/teacher")
 
-                    } else if(!ok){
-                        console.log(`${status} ${statusText} this ${url}`)
-                        setMessage(`${status} ${statusText}`)
-                        setIsError(true)
-                        setTimeOut()
+                        } else {
+                            setMessage("Username or password incorrect!")
+                            setIsError(true)
+                            setTimeOut()
+                        }
                     }
-                    
-                } catch (err) {
-                    // console.log(err.message)
-                    // setMessage(`Info : ${err.message}`)
-                    // setIsError(true)
-                    // setTimeOut()
+
+                } else if(!ok){
+                    console.log(`${status} ${statusText} this ${url}`)
+                    setMessage(`${status} ${statusText}`)
+                    setIsError(true)
+                    setTimeOut()
                 }
 
             } else if(id === "3") { // 3 is admin
@@ -182,26 +165,10 @@ const Login = ( props ) => {
         }
     }
 
-    // const setLocalStorage = (data) => {
-    //     localStorage.setItem("user", JSON.stringify(data))
-    // }
-
     const setTimeOut = () => {
         setTimeout(() => {
             setIsError(false)
         }, 5000);
-    }
-
-    const genToken = () => {
-        let pass = ""; 
-        let str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' +  
-                'abcdefghijklmnopqrstuvwxyz0123456789@#$'; 
-          
-        for (let i = 1; i <= 15; i++) { 
-            var char = Math.floor(Math.random() * str.length + 1); 
-            pass += str.charAt(char) 
-        } 
-        return pass
     }
 
     return (

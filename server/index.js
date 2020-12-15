@@ -179,7 +179,7 @@ app.put("/teachers/updateById/:id", async (req, res) => {
 }); 
 
 // Subjects
-app.get("/subjects", (req, res) => {
+app.get("/subjects", async (req, res) => {
     const result = mysqlConnection.query("SELECT * FROM register_system.subjects", (err, row, data) => {
         if(!err) {
             res.send(row)
@@ -190,11 +190,58 @@ app.get("/subjects", (req, res) => {
 });
 
 // Messages
-app.get("/messages", (req, res) => {
+app.get("/messages", async (req, res) => {
     const result = mysqlConnection.query("SELECT * FROM register_system.messages", (err, row, data) => {
         if(!err) {
             res.send(row)
         } else {
+            res.send(err.message)
+        }
+    })
+});
+
+// Other //
+app.get("/others/checkDuplicateUsername/:username", async (req, res) => {
+    const { username } = req.params
+    const result = mysqlConnection.query("SELECT regist_username FROM register_system.register_user WHERE regist_username = ?",[username], (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else if(err) {
+            res.send(err.message)
+        }
+    })
+});
+
+app.get("/others/checkDuplicateEmail/:email", async (req, res) => {
+    const { email } = req.params
+    const result = mysqlConnection.query("SELECT regist_email FROM register_system.register_user WHERE regist_email = ?",[email], (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else if(err) {
+            res.send(err.message)
+        }
+    })
+});
+
+app.put("/others/updateUsernameAndPasswordById/:id", async (req, res) => {
+    const { id } = req.params
+    const { password } = req.body
+    const resutl = mysqlConnection.query("UPDATE register_system.register_user SET regist_password = ? WHERE id = ?", [password, id], (err, data) => {
+        if(!err) {
+            data.message = "Update password succressful"
+            res.send(data)
+        } else if(err){
+            res.send(err.message)
+        }
+    })
+});
+
+app.get("/others/getUserDataByUsername/:username", async (req, res) => {
+    const { username } = req.params
+    const result = await mysqlConnection.query("SELECT * FROM register_system.register_user WHERE regist_username = ?",[username], (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else if(err) {
             res.send(err.message)
         }
     })
