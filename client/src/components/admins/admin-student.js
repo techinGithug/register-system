@@ -22,6 +22,7 @@ const AdminStudent = (props) => {
     const init = () => {
         // if(authenLogin.length === 0) {
         const getStorage = JSON.parse(localStorage.getItem("user"))
+        const { userData } = getStorage
         if(getStorage === null) {
             props.history.push("/") 
         } else {
@@ -124,9 +125,9 @@ const AdminStudent = (props) => {
                         {
                             students.map(std => (
                                 <tr key={std.id}>
-                                    <td className="text-center">{std.std_id}</td>
+                                    <td>{std.std_id}</td>
                                     <td>{std.std_firstname} {std.std_lastname}</td>
-                                    <td>{std.std_age}</td>
+                                    <td className="text-center">{std.std_age}</td>
                                     <td className="text-center">{std.std_gender}</td>
                                     <td className="text-center">
                                         <button className="btn btn-light mr-1" onClick={() => handleUpdate()}><IoPencilOutline className="ics-3" /></button>

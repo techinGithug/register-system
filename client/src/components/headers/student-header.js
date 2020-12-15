@@ -2,7 +2,7 @@ import React, { Fragment, useContext } from 'react';
 import AppContext from "../../context/appContext";
 import {
     NavLink
-  } from "react-router-dom";
+} from "react-router-dom";
 import { 
     IoLogOutOutline, 
     IoHomeOutline,
@@ -12,7 +12,8 @@ import {
     IoPersonOutline,
     IoMailOutline,
     IoMailUnreadOutline,
-    IoPerson
+    IoPerson,
+    IoCreateOutline
 } from "react-icons/io5";
 
 const StudentHeader = ({ props} ) => {
@@ -35,9 +36,9 @@ const StudentHeader = ({ props} ) => {
                         </NavLink> 
                     </div>
                     
-                    {/* <NavLink to="/admin-student" className="m-1 hover-grey mr-3"><IoPeopleOutline className="ics-5" /></NavLink>
-                    <NavLink to="#" className="m-1 hover-grey mr-3"><IoPersonOutline className="ics-5" /></NavLink>*/}
+                    {/* <NavLink to="/admin-student" className="m-1 hover-grey mr-3"><IoPeopleOutline className="ics-5" /></NavLink>*/}
                     <NavLink to="#" className="m-1 hover-grey mr-3"><IoPersonOutline className="ics-5" /></NavLink> 
+                    <NavLink to="/student-addInformation" className="m-1 hover-grey mr-3"><IoCreateOutline className="ics-5" /></NavLink>                    
                     <NavLink to="#" className="m-1 hover-grey mr-3"><IoSettingsOutline className="ics-5" /></NavLink>
                     <NavLink to="#" className="m-1 hover-grey mr-3"><IoMailUnreadOutline className="ics-5" /></NavLink>
                     <div className="m-1 ml-4" >

@@ -131,7 +131,7 @@ const Student = (props) => {
 
     return (
         <Fragment>
-            <div style={{ backgroundColor: "#EAEDED" }}>
+             <div>  {/* style={{ backgroundColor: "#EAEDED" }} */}
                 <StudentHeader props={props} />
             </div>
             <div className="container">

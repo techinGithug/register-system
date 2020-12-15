@@ -41,7 +41,7 @@ app.get("/admins/getByUsername/:username", async (req, res) => {
 app.put("/admins/blockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const result = mysqlConnection.query("UPDATE register_system.students SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
+    const result = mysqlConnection.query("UPDATE register_system.register_user SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
         if(!err) {
             data.message = "Blocked this student successful"
             res.send(data)
@@ -54,7 +54,7 @@ app.put("/admins/blockStudent/:id", async (req, res) => {
 app.put("/admins/unblockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const result = mysqlConnection.query("UPDATE register_system.students SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
+    const result = mysqlConnection.query("UPDATE register_system.register_user SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
         if(!err) {
             data.message = "Unblocked this student successful"
             res.send(data)
@@ -66,7 +66,8 @@ app.put("/admins/unblockStudent/:id", async (req, res) => {
 
 // Student //
 app.get("/students", async (req, res) => {
-    const result = mysqlConnection.query("SELECT * FROM register_system.students", (err, row, data) => {
+    const result = mysqlConnection.query(
+        "SELECT std.*, reg.is_block FROM register_system.students std, register_system.register_user reg WHERE std.std_id = reg.regist_id AND reg.regist_type = '1' ", (err, row, data) => {
         if(!err) {
             res.send(row)
         } else if(err) {

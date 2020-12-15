@@ -25,10 +25,10 @@ const Login = ( props ) => {
     const handleRegister = () => {
         const id = type.type
         if(id === "1") { // 1 is student
-            props.history.push("/register-student")
+            props.history.push("/student-register")
         }
         if(id === "2") { // 2 is teacher
-            props.history.push("/register-teacher")
+            props.history.push("/teacher-register")
         }
     }
 
