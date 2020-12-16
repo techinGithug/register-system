@@ -117,13 +117,13 @@ const RegisterStudent = (props) => {
             // console.log(res)
             const { status, statusText, ok, url } = res
             if(ok) {
-                clearInput()
+                // clearInput()
                 const jsonData = await res.json()
                 registerStudent(data);
                 setMsg(jsonData.message)
                 setIsSuccess(true)
                 setTimeOutSuccess()
-                // props.history.push("/")
+                props.history.push("/")
 
             } else if(!ok) {
                 console.error(`${status} ${statusText} this ${url}`)

@@ -85,6 +85,7 @@ const AddStudentData = (props) => {
             };
 
             const { isError, message: msg} = addStudentPersonalData(data)
+            console.log(isError+" "+msg)
             if(isError) {
                 setMessage("Add student personal data uncomplete!")
                 setIsSuccess(true)
@@ -110,6 +111,7 @@ const AddStudentData = (props) => {
             type: stdType
         };
         const { isError, message: msg } = addStudentEducationData(data)
+        console.log(isError+" "+msg)
         if(isError) {
             setMessage("Add student education uncomplete!")
             setIsSuccess(true)

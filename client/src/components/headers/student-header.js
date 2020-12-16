@@ -49,7 +49,7 @@ const StudentHeader = ({ props} ) => {
                     </div>
                     
                     {/* <NavLink to="/admin-student" className="m-1 hover-grey mr-3"><IoPeopleOutline className="ics-5" /></NavLink>*/}
-                    <NavLink to="#" className="m-1 hover-grey mr-3"><IoPersonOutline className="ics-5" /></NavLink> 
+                    <NavLink to="/student-profile" className="m-1 hover-grey mr-3"><IoPersonOutline className="ics-5" /></NavLink> 
                     <NavLink to="/student-addData" className="m-1 hover-grey mr-3"><IoCreateOutline className="ics-5" /></NavLink>                    
                     <NavLink to="#" className="m-1 hover-grey mr-3"><IoSettingsOutline className="ics-5" /></NavLink>
                     <NavLink to="#" className="m-1 hover-grey mr-3"><IoMailUnreadOutline className="ics-5" /></NavLink>

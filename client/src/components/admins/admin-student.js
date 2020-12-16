@@ -114,7 +114,7 @@ const AdminStudent = (props) => {
                 <table className="table mt-2">
                     <thead className="text-center">
                         <tr>
-                            <th scope="col" width="50">ID</th>
+                            <th scope="col" width="100">ID</th>
                             <th scope="col">NAME</th>
                             <th scope="col" width="20">AGE</th>
                             <th scope="col" width="20">GENDER</th>
@@ -130,15 +130,15 @@ const AdminStudent = (props) => {
                                     <td className="text-center">{std.std_age}</td>
                                     <td className="text-center">{std.std_gender}</td>
                                     <td className="text-center">
-                                        <button className="btn btn-light mr-1" onClick={() => handleUpdate()}><IoPencilOutline className="ics-3" /></button>
-                                        <button className="btn btn-light mr-1" onClick={() => handleDelete()}><IoTrashOutline className="ics-3 text-danger" /></button>
+                                        <button className="btn btn-light mr-1" onClick={() => handleUpdate(std.std_id)}><IoPencilOutline className="ics-3" /></button>
+                                        <button className="btn btn-light mr-1" onClick={() => handleDelete(std.std_id)}><IoTrashOutline className="ics-3 text-danger" /></button>
                                         { 
                                             std.is_block  === "0" ? (
-                                                <button className="btn btn-light" onClick={() => handleBlock(std.id)}>
+                                                <button className="btn btn-light" onClick={() => handleBlock(std.std_id)}>
                                                     <IoLockOpenOutline className="ics-3 text-success" />
                                                 </button>
                                             ) : (
-                                                <button className="btn btn-light" onClick={() => handleUnBlock(std.id)}>
+                                                <button className="btn btn-light" onClick={() => handleUnBlock(std.std_id)}>
                                                     <IoLockClosedOutline className="ics-3 text-danger"  />
                                                     </button>
                                             )

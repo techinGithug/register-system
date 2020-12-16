@@ -41,7 +41,7 @@ app.get("/admins/getByUsername/:username", async (req, res) => {
 app.put("/admins/blockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE id = ?"
+    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE regist_id = ?"
     const result = mysqlConnection.query(sql,[data, id], (err, data) => {
         if(!err) {
             data.message = "Blocked this student successful"
@@ -55,7 +55,7 @@ app.put("/admins/blockStudent/:id", async (req, res) => {
 app.put("/admins/unblockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE id = ?"
+    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE regist_id = ?"
     const result = mysqlConnection.query(sql,[data, id], (err, data) => {
         if(!err) {
             data.message = "Unblocked this student successful"
@@ -98,6 +98,45 @@ app.get("/students/getById/:id", async (req, res) => {
             res.send(err.message)
         }
     });
+});
+
+app.get("/students/getStudentByStudentId/:id", (req, res) => {
+    const { id } = req.params
+    let sql  = " select ";
+        sql += "    std.*, ";
+        sql += "    addr.user_address, ";
+        sql += "    addr.sub_district, ";
+        sql += "    addr.district, ";
+        sql += "    addr.province, ";
+        sql += "    addr.zipcode, ";
+        sql += "    edu.std_faculty, ";
+        sql += "    edu.std_major, ";
+        sql += "    edu.std_level, ";
+        sql += "    edu.std_type, ";
+        sql += "    edu.t_advisor_id, ";
+        sql += "    (select t_firstname ";
+        sql += "        from  register_system.teachers ";
+        sql += "        where t_id = edu.t_advisor_id ";
+        sql += "    ) as t_name, ";
+        sql += "    (select t_lastname ";
+        sql += "        from register_system.teachers ";
+        sql += "         where t_id = edu.t_advisor_id ";
+        sql += "    ) as t_lastname ";
+        sql += " from ";
+        sql += "    register_system.students std, ";
+        sql += "    register_system.education_data edu, ";
+        sql += "    register_system.address_user addr ";
+        sql += " where std.std_id = edu.std_id ";
+        sql += "    and std.std_id = addr.user_id ";
+        sql += "    and std.std_id = ? ";
+
+    const result = mysqlConnection.query(sql, [id], (err, row) => {
+        if(!err) {
+            res.send(row)
+        } else {
+            res.send(err.message)
+        }
+    })
 });
 
 app.put("/students/updateById/:id", async (req, res) => {

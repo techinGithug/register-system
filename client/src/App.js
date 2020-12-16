@@ -15,6 +15,7 @@ import Student from "./components/students/student";
 import RegisterStudent from "./components/students/registerStudent";
 import RegisterTeacher from "./components/teachers/registerTeacher";
 import Teacher from "./components/teachers/teacher";
+import StudentProfile from "./components/students/studentProfile";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
           <Route path="/student" component={Student} />
           <Route path="/student-register" component={RegisterStudent} />
           <Route path="/student-addData" component={AddStudentData} />
+          <Route path="/student-profile" component={StudentProfile} />
           <Route path="/teacher" component={Teacher} />
           <Route path="/register-teacher" component={RegisterTeacher} />
         </Switch>

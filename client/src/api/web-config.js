@@ -52,6 +52,10 @@ const Webconfig = {
         return this.rootUrl+`/students/getLastStudentId`
     },
 
+    getStudentByStudentId: function(id) {
+        return this.rootUrl+`/students/getStudentByStudentId/${id}`
+    },
+
     checkStudentPersonalData: function(id) {
         return this.rootUrl+`/students/checkStudentPersonalData/${id}`
     },

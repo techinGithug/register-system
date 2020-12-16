@@ -49,6 +49,15 @@ const AppState = (props) => {
 
     
 
+    const init = () => {
+        const isCheck = getUser()
+        if(isCheck === null) {
+            props.history.push("/") 
+        } else {
+            return isCheck
+        }
+    };
+
     const checkDuplicateUsername = async (data) => {
         const { type, username } = data
         if(type === "1") {
@@ -101,25 +110,22 @@ const AppState = (props) => {
         }
     };
 
-    const addStudentPersonalData = async (data) => {
-        const res = await fetch(Webconfig.addStudentPersonalData(), {
-            method: "POST",
-            headers: {
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify(data)
-        });
-        const { status, statusText, ok, url } = res
-        if(ok) {
-            const jsonData = await res.json()
-            console.log(jsonData)
-            return jsonData
+    
 
-        } else if(!ok) {
-            console.log(`${status} ${statusText} this ${url}`)
-        }
+    
+
+    const getUserDataByUsername = async (username) => {
+        const res = await fetch(Webconfig.getUserDataByUsername(username), {
+            method:"GET"
+        });
+        return res
     };
 
+    
+
+    
+
+    // STUDENT //
     const addStudentEducationData = async (data) => {
         const res = await fetch(Webconfig.addStudentEducationData(), {
             method: "POST",
@@ -139,11 +145,23 @@ const AppState = (props) => {
         }
     };
 
-    const getUserDataByUsername = async (username) => {
-        const res = await fetch(Webconfig.getUserDataByUsername(username), {
-            method:"GET"
+    const addStudentPersonalData = async (data) => {
+        const res = await fetch(Webconfig.addStudentPersonalData(), {
+            method: "POST",
+            headers: {
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify(data)
         });
-        return res
+        const { status, statusText, ok, url } = res
+        if(ok) {
+            const jsonData = await res.json()
+            console.log(jsonData)
+            return jsonData
+
+        } else if(!ok) {
+            console.log(`${status} ${statusText} this ${url}`)
+        }
     };
 
     const checkStudentPersonalData = async (id) => {
@@ -186,6 +204,28 @@ const AppState = (props) => {
         }
     };
 
+    const getStudentByStudentId = async (id) => {
+        const res = await fetch(Webconfig.getStudentByStudentId(id), {
+            method: "GET"
+        });
+        // console.log(res)
+        const { status, statusText, ok, url } = res
+        if(ok) {
+            const jsonData = await res.json()
+            // console.log(jsonData)
+            if(jsonData.length > 0) {
+                return jsonData
+            } else {
+
+            }
+
+        } else if(!ok) {
+
+        }
+    }
+
+
+    // GENERAL //
     const setLocalStorage = (data) => {
         localStorage.setItem("user", JSON.stringify(data))
     };
@@ -215,6 +255,11 @@ const AppState = (props) => {
         return pass
     };
 
+    const testTime = () => {
+        const date = new Date()
+        return date.getSeconds()
+    };
+
     return (
         <AppContext.Provider value={{
             // Sate
@@ -237,10 +282,15 @@ const AppState = (props) => {
             genToken,
             getUserDataByUsername,
             getUser,
+            getStudentByStudentId,
+            init,
             login,
             logout,
             registerStudent,
-            setLocalStorage
+            setLocalStorage,
+
+            // test //
+            testTime
             
         }}
         >

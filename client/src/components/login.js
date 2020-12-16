@@ -106,6 +106,10 @@ const Login = ( props ) => {
                             setIsError(true)
                             setTimeOut()
                         }
+                    } else {
+                        setMessage("This user not found!")
+                        setIsError(true)
+                        setTimeOut()
                     }
 
                 } else if(!ok){
@@ -123,6 +127,7 @@ const Login = ( props ) => {
                     const { status, statusText, ok, url } = res
                     if(ok) {
                         const jsonData = await res.json()
+                        console.log(jsonData)
                         if(jsonData.length > 0) {
                             const { am_username: user, am_password: pass} = jsonData[0]
                             if(username === user && password === pass) {
@@ -141,6 +146,11 @@ const Login = ( props ) => {
                                 setIsError(true)
                                 setTimeOut()
                             }
+
+                        } else {
+                            setMessage("This user not found!")
+                            setIsError(true)
+                            setTimeOut()
                         }
 
                     } else if(!ok){
@@ -151,7 +161,7 @@ const Login = ( props ) => {
                     }
                     
                 } catch (err) {
-                    // console.log(err.message)
+                    console.log(err.message)
                     // setMessage(`Info : ${err.message}`)
                     // setIsError(true)
                     // setTimeOut()
