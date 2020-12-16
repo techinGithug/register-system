@@ -3,13 +3,16 @@ import {
     IoPencilOutline,
     IoSaveOutline,
     IoCloseOutline,
+    IoCreateOutline,
+    IoArrowBackOutline
  } from "react-icons/io5";
 import AppContext from "../../context/appContext";
 import Webconfig from "../../api/web-config";
 import StudentHeader from "../headers/student-header";
+import AlertWarning from "../../components/alerts/alert-warning";
 
 const Student = (props) => {
-    const { login, clearLocalStorage, setLocalStorage, getUserDataByUsername, genToken } = useContext(AppContext)
+    const { login, clearLocalStorage, setLocalStorage, getUserDataByUsername, genToken, checkStudentPersonalData, checkStudentEducationData } = useContext(AppContext)
     const [data, setData] = useState([])
     const [newPassword, setNewPassword] = useState("")
     const [oldPassword, setOldPassword] = useState("")
@@ -17,6 +20,8 @@ const Student = (props) => {
     const [message, setMessage] = useState("")
     const [isError, setIsErrro] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [addPersonal, setAddPersonal] = useState(false)
+    const [addEducation, setAddEducation] = useState(false)
 
     useEffect(() => {
         init()
@@ -25,11 +30,18 @@ const Student = (props) => {
     const init = async () => {
         const getStorage = JSON.parse(localStorage.getItem("user"))
         // console.log(getStorage)
-        const { token, isLogin, userData } = getStorage
         if(getStorage === null) {
             props.history.push("/") 
         } else {
+            const { token, isLogin, userData } = getStorage
+            const { regist_id: std_id } = userData
             setData(userData)
+
+            const isHave1 = await checkStudentPersonalData(std_id)
+            isHave1 ? (setAddPersonal(true)) : (setAddPersonal(false))
+
+            const isHave2 = await checkStudentEducationData(std_id)
+            isHave2 ? (setAddEducation(true)) : (setAddEducation(false))
         }
     };
 
@@ -131,27 +143,44 @@ const Student = (props) => {
 
     return (
         <Fragment>
-             <div>  {/* style={{ backgroundColor: "#EAEDED" }} */}
+             <div>
                 <StudentHeader props={props} />
             </div>
             <div className="container">
                 <div className="mt-3 w-50 mx-auto">
+                    {addPersonal ? ("") : (
+                        <div className="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Personal data!</strong> You are not add personal data. click <IoCreateOutline className="ics-2 ml-2 mb-1" />
+                        {/* <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> */}
+                    </div>
+                    )}
+                    
+                    {addEducation ? ("") : (
+                        <div className="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Education data!</strong> You are not data education data. click <IoCreateOutline className="ics-2 ml-2 mb-1" />
+                        {/* <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> */}
+                    </div>
+                    )}
                     <table className="table table-bordered">
                         <tbody>
                             <tr className="text-center">
-                                <th width="60">Username</th>
-                                <th width="60">Password</th>
-                                <th>#</th>
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th width="60">#</th>
                             </tr>
                             <tr className="text-center">
                                 <td>
                                     <form>
-                                        <input type="password" value={data.regist_username} readOnly />
+                                        <input type="text" className="form-control" value={data.regist_username} readOnly />
                                     </form>
                                 </td>
                                 <td>
                                     <form>
-                                        <input type="password" value={data.regist_password} readOnly />
+                                        <input type="password" className="form-control" value={data.regist_password} readOnly />
                                     </form>
                                 </td>
                                 <td>
@@ -216,7 +245,7 @@ const Student = (props) => {
                             </div>
                             <div className="modal-footer">
                                 <button type="submit" className="btn btn-light"><IoSaveOutline className="ics-3" /></button> 
-                                <button type="button" className="btn btn-light" data-dismiss="modal"><IoCloseOutline className="ics-3" /></button>
+                                <button type="button" className="btn btn-light" data-dismiss="modal"><IoArrowBackOutline className="ics-3" /></button>
                             </div>
                         </form>
                         {isError && (

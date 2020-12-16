@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 import AppContext from "../../context/appContext";
 import {
     NavLink
@@ -17,6 +17,18 @@ import {
 
 const AdminHeader = ({ props} ) => {
     const { logout } = useContext(AppContext)
+
+    useEffect(() => {
+        init()
+    }, [])
+
+    const init = async () => {
+        const getStorage = JSON.parse(localStorage.getItem("user"))
+        // console.log(getStorage)
+        if(getStorage === null) {
+            props.history.push("/") 
+        }
+    };
 
     const handleLogout = () => {
         logout()

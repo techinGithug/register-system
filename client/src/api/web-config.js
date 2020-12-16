@@ -24,6 +24,14 @@ const Webconfig = {
 
 
     // Student //
+    addStudentPersonalData: function() {
+        return this.rootUrl+`/students/addStudentPersonalData`
+    },
+
+    addStudentEducationData: function() {
+        return this.rootUrl+`/students/addStudentEducationData`
+    },
+
     getAllStudents: function() {
         return this.rootUrl+`/students`
     },
@@ -42,6 +50,14 @@ const Webconfig = {
 
     getLastStudentId: function() {
         return this.rootUrl+`/students/getLastStudentId`
+    },
+
+    checkStudentPersonalData: function(id) {
+        return this.rootUrl+`/students/checkStudentPersonalData/${id}`
+    },
+
+    checkStudentEducationData: function(id) {
+        return this.rootUrl+`/students/checkStudentEducationData/${id}`
     },
 
     insertStudent: function() {

@@ -41,7 +41,8 @@ app.get("/admins/getByUsername/:username", async (req, res) => {
 app.put("/admins/blockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const result = mysqlConnection.query("UPDATE register_system.register_user SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
+    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE id = ?"
+    const result = mysqlConnection.query(sql,[data, id], (err, data) => {
         if(!err) {
             data.message = "Blocked this student successful"
             res.send(data)
@@ -54,7 +55,8 @@ app.put("/admins/blockStudent/:id", async (req, res) => {
 app.put("/admins/unblockStudent/:id", async (req, res) => {
     const { id } = req.params
     const { data } = req.body
-    const result = mysqlConnection.query("UPDATE register_system.register_user SET is_block = ? WHERE id = ?",[data, id], (err, data) => {
+    const sql = "UPDATE register_system.register_user SET is_block = ? WHERE id = ?"
+    const result = mysqlConnection.query(sql,[data, id], (err, data) => {
         if(!err) {
             data.message = "Unblocked this student successful"
             res.send(data)
@@ -121,6 +123,28 @@ app.get("/students/getLastStudentId", async (req, res) => {
     })
 });
 
+app.get("/students/checkStudentPersonalData/:id", (req, res) => {
+    const { id } = req.params
+    const result = mysqlConnection.query("SELECT * FROM register_system.students WHERE std_id = ?",[id], (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else {
+            res.send(err.message)
+        }
+    })
+});
+
+app.get("/students/checkStudentEducationData/:id", (req, res) => {
+    const { id } = req.params
+    const result = mysqlConnection.query("SELECT * FROM register_system.education_data WHERE std_id = ?",[id], (err, row, data) => {
+        if(!err) {
+            res.send(row)
+        } else {
+            res.send(err.message)
+        }
+    })
+});
+
 app.post("/students/insert", async (req, res) => {
     const { id,username, password, email, phone, type, block, status } = req.body
     const result = mysqlConnection.query("INSERT INTO register_system.register_user (regist_id, regist_username, regist_password, regist_email, regist_phone, regist_type, is_block, regist_status) VALUES (?,?,?,?,?,?,?,?)",[id,username,password,email,phone,type,block,status], (err, data) => {
@@ -129,6 +153,73 @@ app.post("/students/insert", async (req, res) => {
             res.send(data)
         } else {
             res.send(err.message)
+        }
+    })
+});
+
+app.post("/students/addStudentPersonalData", async (req, res) => {
+    const { std_id, firstname, lastname, age, gender, birthday, address, zipcode } = req.body
+    let result = {
+        isError:false,
+        message: "Add student data complete"
+    }
+
+    mysqlConnection.beginTransaction((err) => {
+        if (!err){ //{ throw err; }
+            mysqlConnection.query("INSERT INTO register_system.students (std_id, std_firstname, std_lastname, std_age, std_gender, std_birthday) VALUES (?,?,?,?,?,?)",
+                [std_id, firstname, lastname, age, gender, birthday], (err, data, fields) => {
+                if (err) {
+                    result.isError=true
+                    result.message=""
+                    res.send(result)
+                    return mysqlConnection.rollback(() => {
+                        throw err;
+                    });
+                }
+        
+                mysqlConnection.query("INSERT INTO register_system.address_user (user_id, user_address, sub_district, district, province, zipcode) VALUES (?,?,?,?,?,?)", 
+                    [std_id, address, "test", "test", "test", zipcode], (err, data, fields) => {
+                    if (err) {
+                        result.isError=true
+                        result.message=""
+                        res.send(result)
+                        return mysqlConnection.rollback(() => {
+                            throw err;
+                        });
+                    }
+
+                    mysqlConnection.commit((err) => {
+                        if (err) {
+                            return mysqlConnection.rollback(() => {
+                                throw err;
+                            });
+
+                        } else {
+                            res.send(result)
+                        }
+                    });
+                });
+            });
+        }
+
+      });
+});
+
+app.post("/students/addStudentEducationData", async (req, res) => {
+    const resData = {
+        isError:false,
+        message:"Add student education data complete"
+    };
+
+    const { std_id, faculty, major, level, type } = req.body
+    const result = mysqlConnection.query("INSERT INTO register_system.education_data (std_id, std_faculty, std_major, std_level, std_type, t_advisor_id) VALUES (?,?,?,?,?,?)", 
+        [std_id, faculty, major, level, type, "0"], (err, data) => {
+        if(!err) {
+            res.send(resData)
+        } else {
+            resData.isError=true
+            resData.message=err.message
+            res.send(resData)
         }
     })
 });
