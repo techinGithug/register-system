@@ -73,6 +73,10 @@ const Webconfig = {
     },
 
     // Teacher //
+    checkTeacherPersonalData: function(id) {
+        return this.rootUrl+`/teachers/checkTeacherPersonalData/${id}`
+    },
+
     getAllTeachers: function() {
         return this.rootUrl+`/teachers`
     },
@@ -91,6 +95,10 @@ const Webconfig = {
 
 
     // Subject //
+    addSubject: function() {
+        return this.rootUrl+`/subjects/addSubject`
+    },
+
     getAllSubjects: function() {
         return this.rootUrl+`/subjects`
     },
@@ -102,6 +110,10 @@ const Webconfig = {
     },
 
     // Other //
+    registerUser: function() {
+        return this.rootUrl+`/others/registerUser`
+    },
+
     checkDuplicateUsername: function(username) {
         return this.rootUrl+`/others/checkDuplicateUsername/${username}`
     },

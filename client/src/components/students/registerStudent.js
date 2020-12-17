@@ -1,6 +1,11 @@
 import React, { Fragment, useState, useEffect, useContext } from 'react';
 import AppContext from "../../context/appContext";
 import Webconfig from "../../api/web-config";
+import { 
+    IoSaveOutline,
+    IoCreateOutline,
+    IoArrowBackOutline
+ } from "react-icons/io5";
 
 const RegisterStudent = (props) => {
     const { registerStudent, genId, checkDuplicateUsername, checkDuplicateEmail } = useContext(AppContext)
@@ -107,7 +112,7 @@ const RegisterStudent = (props) => {
                 block: "0",
                 status: "0"
             };
-            const res = await fetch(Webconfig.insertStudent(), {
+            const res = await fetch(Webconfig.registerUser(), {
                 method: "POST",
                 headers : {
                     'Content-Type': 'application/json'
@@ -213,95 +218,9 @@ const RegisterStudent = (props) => {
                             required
                         />
                     </div>
-                    {/* <hr /> */}
-                    {/* <div className="form-group">
-                        <label>Firstname</label>
-                        <input 
-                            type="text" 
-                            className="form-control"
-                            value={firstname}
-                            onChange={(e) => setFirstname(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label >Lastname</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            value={lastname}
-                            onChange={(e) => setLastname(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label >Birthday</label>
-                        <input 
-                            type="date" 
-                            className="form-control"
-                            value={birthday}
-                            onChange={(e) => setBirthday(e.target.value)} 
-                            required
-                            // value="2018-07-22"
-                            // min="1850/01/01" max="2999/12/31"
-                        />
-                    </div>
-                    <div className="form=group">
-                        <level>Address</level>
-                        <textarea type="text"
-                            className="from-control"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label >Faculty</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            value={faculty}
-                            onChange={(e) => setFaculty(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label >Major</label>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            value={major}
-                            onChange={(e) => setMajor(e.target.value)}
-                            required
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label >Level</label>
-                        <select className="custom-select"
-                            onChange={(e) => setLevel({ level: e.target.value })}
-                        >
-                        {
-                            levels.map(item => 
-                                <option key={item.id} value={item.id}>{item.label}</option>
-                            )
-                        }
-                        </select>
-                    </div>
-                    <div className="form-group">
-                        <label >Type</label>
-                        <select className="custom-select"
-                            onChange={(e) => setType({ type: e.target.value })}
-                        >
-                        {
-                            types.map(item => 
-                                <option key={item.id} value={item.label}>{item.label}</option>
-                            )
-                        }
-                        </select>
-                    </div> */}
                     <div className="text-center">
-                        <button type="submit" className="btn btn-light mr-1">Register</button>
-                        <button type="button" className="btn btn-light" onClick={() => props.history.push("/")}>Cancel</button>
+                        <button type="submit" className="btn btn-light mr-1"><IoSaveOutline className="ics-3" /></button>
+                        <button type="button" className="btn btn-light" onClick={() => props.history.push("/")}><IoArrowBackOutline className="ics-3" /></button>
                     </div>
                     {isError && (
                         <div className="alert alert-danger mt-4" role="alert">

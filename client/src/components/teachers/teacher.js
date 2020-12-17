@@ -1,10 +1,17 @@
 import React, { Fragment, useContext, useEffect, useState } from 'react'
-import { IoPerson } from "react-icons/io5";
+import { 
+    IoPencilOutline,
+    IoSaveOutline,
+    IoCloseOutline,
+    IoCreateOutline,
+    IoArrowBackOutline
+ } from "react-icons/io5";
 import AppContext from "../../context/appContext";
 import Webconfig from "../../api/web-config";
+import TeacherHeader from "../headers/teacher-header";
 
 function Teacher( props ) {
-    const { authenLogin, logout } = useContext(AppContext)
+    const { logout, checkTeacherPersonalData } = useContext(AppContext)
     const [data, setData] = useState([])
     const [newPassword, setNewPassword] = useState("")
     const [oldPassword, setOldPassword] = useState("")
@@ -12,6 +19,7 @@ function Teacher( props ) {
     const [message, setMessage] = useState("")
     const [isError, setIsErrro] = useState(false)
     const [isSuccess, setIsSuccess] = useState(false)
+    const [addPersonal, setAddPersonal] = useState(false)
 
     useEffect(() => {
         init()
@@ -22,23 +30,16 @@ function Teacher( props ) {
     }, [data]);
 
     const init = async () => {
-        if(authenLogin.length === 0) {
+        const getStorage = JSON.parse(localStorage.getItem("user"))
+        if(getStorage === null) {
             props.history.push("/") 
         } else {
-            const { id } = authenLogin.userData
-            const res = await fetch(Webconfig.getTeacherById(id), {
-                method: "GET"
-            });
-            const { status, statusText, ok, url} = res
-            if(ok) {
-                const jsonData = await res.json()
-                if(jsonData.length > 0) {
-                setData(jsonData[0])
-                }
-            } else if(!ok) {
-                console.log(`${status} ${statusText} this ${url}`)
-            }
-            
+            const { token, isLogin, userData } = getStorage
+            const { regist_id: t_id } = userData
+            setData(userData)
+
+            const isHave = await checkTeacherPersonalData(t_id)
+            isHave ? (setAddPersonal(true)) : (setAddPersonal(false))
         }
     };
 
@@ -48,7 +49,7 @@ function Teacher( props ) {
         const isValid = checkData()
         if(isValid) {
             try {
-                const res = await fetch(Webconfig.updateTeacherById(id), {
+                const res = await fetch(Webconfig.updateUsernameAndPasswordById(id), {
                     method: "PUT",
                     headers: {
                         "Content-Type":"application/json",
@@ -84,7 +85,7 @@ function Teacher( props ) {
     }
 
     const checkData = () => {
-        const { t_password: oldPass } = data
+        const { regist_password: oldPass } = data
         let res = false
         if(oldPassword !== oldPass) {
             setMessage("Old password incorrect!")
@@ -120,72 +121,45 @@ function Teacher( props ) {
 
     return (
         <Fragment>
-            <div style={{ backgroundColor: "#EAEDED" }}>
-                <div className="container d-flex justify-content-between">
-                    <div><h2>Teacher || Register System</h2></div>
-                    <div className="mt-1">
-                        <button 
-                            className="btn btn-light" 
-                            onClick={() => handleLogout()}>Logout
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <TeacherHeader props={props} />
             <div className="container">
-                <div className="mt-3 w-75 mx-auto">
-                    <div className="d-flex flex-row-reverse mb-2">
-                        <button 
-                            type="button" 
-                            className="btn btn-light" 
-                            data-toggle="modal" 
-                            data-target="#exampleModal">
-                            Edit password
-                        </button>
-
+            <div className="mt-3 w-50 mx-auto">
+                    {addPersonal ? ("") : (
+                        <div className="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Personal data!</strong> You are not add personal data. click <IoCreateOutline className="ics-2 ml-2 mb-1" />
+                        {/* <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button> */}
                     </div>
+                    )}
+                    
                     <table className="table table-bordered">
                         <tbody>
-                            <tr>
-                                <th width="90">Username</th>
+                            <tr className="text-center">
+                                <th>Username</th>
+                                <th>Password</th>
+                                <th width="60">#</th>
+                            </tr>
+                            <tr className="text-center">
                                 <td>
                                     <form>
-                                        <input type="password" value={data.t_username} readonly />
+                                        <input type="text" className="form-control" value={data.regist_username} readOnly />
                                     </form>
                                 </td>
-                                <th width="90">Password</th>
                                 <td>
                                     <form>
-                                        <input type="password" value={data.t_password} readonly />
+                                        <input type="password" className="form-control" value={data.regist_password} readOnly />
                                     </form>
                                 </td>
-                            </tr>
-                            <tr>
-                                <th>Name</th>
-                                <td>{data.t_firstname} {data.t_lastname}</td>
-                                <th>Gender</th>
-                                <td>{data.t_gender}</td>
-                            </tr>
-                            <tr>
-                                <th>Age</th>
-                                <td>{data.t_age}</td>
-                                <th>Birthday</th>
-                                <td>{data.t_birthday}</td>
-                            </tr>
-                            <tr>
-                                <th>Phone</th>
-                                <td>{data.t_phone}</td>
-                                <th>Email</th>
-                                <td>{data.t_email}</td>
-                            </tr>
-                            <tr>
-                                <th>Faculty</th>
-                                <td>{data.t_faculty}</td>
-                                <th>Department</th>
-                                <td>{data.t_department}</td>
-                            </tr>
-                            <tr>
-                                <th>Address</th>
-                                <td colSpan="3">{data.t_address}</td>
+                                <td>
+                                    <button 
+                                        type="button" 
+                                        className="btn btn-light" 
+                                        data-toggle="modal" 
+                                        data-target="#exampleModal">
+                                        <IoPencilOutline className="ics-3" />
+                                    </button>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -238,8 +212,8 @@ function Teacher( props ) {
                                 </div>
                             </div>
                             <div className="modal-footer">
-                                <button type="submit" className="btn btn-light">Update</button> 
-                                <button type="button" className="btn btn-light" data-dismiss="modal">Close</button>
+                                <button type="submit" className="btn btn-light"><IoSaveOutline className="ics-3" /></button> 
+                                <button type="button" className="btn btn-light" data-dismiss="modal"><IoArrowBackOutline className="ics-3" /></button>
                             </div>
                         </form>
                         {isError && (
@@ -256,6 +230,7 @@ function Teacher( props ) {
 
                     </div>
                 </div>
+
             </div>
         </Fragment>
     )

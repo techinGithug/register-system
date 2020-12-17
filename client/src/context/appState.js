@@ -42,6 +42,7 @@ const AppState = (props) => {
     // Logout
     const logout = () => {
         clearLocalStorage()
+        clearSubjectStorage()
         dispatch({
             type: LOGOUT
         })
@@ -60,7 +61,7 @@ const AppState = (props) => {
 
     const checkDuplicateUsername = async (data) => {
         const { type, username } = data
-        if(type === "1") {
+        // if(type === "1") {
             const res = await fetch(Webconfig.checkDuplicateUsername(username), {
                 method: "GET"
             });
@@ -77,11 +78,11 @@ const AppState = (props) => {
                 console.error(`${status} ${statusText} this ${url}`)
             }
 
-        } else if(type === "2") {
-            return "Teacher"
-        } else if(type === "3") {
-            return "Amdin"
-        }
+        // } else if(type === "2") {
+        //     return "Teacher"
+        // } else if(type === "3") {
+        //     return "Amdin"
+        // }
     };
 
     const checkDuplicateEmail = async (data) => {
@@ -123,8 +124,6 @@ const AppState = (props) => {
 
     
 
-    
-
     // STUDENT //
     const addStudentEducationData = async (data) => {
         const res = await fetch(Webconfig.addStudentEducationData(), {
@@ -156,7 +155,7 @@ const AppState = (props) => {
         const { status, statusText, ok, url } = res
         if(ok) {
             const jsonData = await res.json()
-            console.log(jsonData)
+            // console.log(jsonData)
             return jsonData
 
         } else if(!ok) {
@@ -204,26 +203,26 @@ const AppState = (props) => {
         }
     };
 
-    const getStudentByStudentId = async (id) => {
-        const res = await fetch(Webconfig.getStudentByStudentId(id), {
+    // TEACHER //
+    const checkTeacherPersonalData = async (id) => {
+        const res = await fetch(Webconfig.checkTeacherPersonalData(id), {
             method: "GET"
         });
         // console.log(res)
         const { status, statusText, ok, url } = res
         if(ok) {
             const jsonData = await res.json()
-            // console.log(jsonData)
             if(jsonData.length > 0) {
-                return jsonData
+                // console.log(jsonData[0])
+                return true
             } else {
-
+                return false
             }
 
         } else if(!ok) {
-
+            console.log(`${status} ${statusText} this ${url}`)
         }
-    }
-
+    };
 
     // GENERAL //
     const setLocalStorage = (data) => {
@@ -255,6 +254,19 @@ const AppState = (props) => {
         return pass
     };
 
+    const setSubjectStorage = (data) => {
+        localStorage.setItem("subject", data)
+    };
+
+    const getSubjectStorage = () => {
+        return JSON.parse(localStorage.getItem("subject"))
+    };
+
+    const clearSubjectStorage = () => {
+        localStorage.removeItem("subject")
+    };
+
+    // TEST //
     const testTime = () => {
         const date = new Date()
         return date.getSeconds()
@@ -278,16 +290,18 @@ const AppState = (props) => {
             clearLocalStorage,
             checkStudentPersonalData,
             checkStudentEducationData,
+            checkTeacherPersonalData,
             genId,
             genToken,
             getUserDataByUsername,
             getUser,
-            getStudentByStudentId,
+            getSubjectStorage,
             init,
             login,
             logout,
             registerStudent,
             setLocalStorage,
+            setSubjectStorage,
 
             // test //
             testTime

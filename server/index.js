@@ -184,17 +184,17 @@ app.get("/students/checkStudentEducationData/:id", (req, res) => {
     })
 });
 
-app.post("/students/insert", async (req, res) => {
-    const { id,username, password, email, phone, type, block, status } = req.body
-    const result = mysqlConnection.query("INSERT INTO register_system.register_user (regist_id, regist_username, regist_password, regist_email, regist_phone, regist_type, is_block, regist_status) VALUES (?,?,?,?,?,?,?,?)",[id,username,password,email,phone,type,block,status], (err, data) => {
-        if(!err) {
-            data.message = "Insert student successful"
-            res.send(data)
-        } else {
-            res.send(err.message)
-        }
-    })
-});
+// app.post("/students/insert", async (req, res) => {
+//     const { id,username, password, email, phone, type, block, status } = req.body
+//     const result = mysqlConnection.query("INSERT INTO register_system.register_user (regist_id, regist_username, regist_password, regist_email, regist_phone, regist_type, is_block, regist_status) VALUES (?,?,?,?,?,?,?,?)",[id,username,password,email,phone,type,block,status], (err, data) => {
+//         if(!err) {
+//             data.message = "Insert student successful"
+//             res.send(data)
+//         } else {
+//             res.send(err.message)
+//         }
+//     })
+// });
 
 app.post("/students/addStudentPersonalData", async (req, res) => {
     const { std_id, firstname, lastname, age, gender, birthday, address, zipcode } = req.body
@@ -296,6 +296,28 @@ app.get("/teachers/getById/:id", async (req, res) => {
     });
 });
 
+app.get("/teachers/checkTeacherPersonalData/:id", async (req, res) => {
+    const { id } = req.params
+    let sql  = " select ";
+        sql += "      t.t_id, ";
+        sql += "      addr.user_id ";
+        sql += " from ";
+        sql += "      register_system.teachers t,  ";
+        sql += "      register_system.address_user addr ";
+        sql += " where ";
+        sql += "      t.t_id = addr.user_id ";
+        sql += " and t.t_id = ? ";
+
+    const result = mysqlConnection.query(sql, [id], (err, row) => {
+        if(!err) {
+            res.send(row)
+        } else {
+            res.send(err.message)
+        }
+    })
+
+});
+
 app.put("/teachers/updateById/:id", async (req, res) => {
     const { id } = req.params
     const { password } = req.body
@@ -311,11 +333,57 @@ app.put("/teachers/updateById/:id", async (req, res) => {
 
 // Subjects
 app.get("/subjects", async (req, res) => {
-    const result = mysqlConnection.query("SELECT * FROM register_system.subjects", (err, row, data) => {
+    let sql  = " select ";
+        sql += "    sj.id, ";
+        sql += "    sj.sj_code, ";
+        sql += "    sj.sj_name, ";
+        sql += "    sj.sj_credit, ";
+        sql += "    sj.sj_teacher_id, ";
+        sql += "    (select t_firstname ";
+        sql += "        from register_system.teachers ";
+        sql += "        where sj.sj_teacher_id = t_id ";
+        sql += "    ) as t_firstname, ";
+        sql += "    (select t_lastname ";
+        sql += "        from register_system.teachers ";
+        sql += "        where sj.sj_teacher_id = t_id ";
+		sql += "    ) as t_lastname ";
+        sql += " from ";
+        sql += "    register_system.subjects sj, ";
+        sql += "    register_system.teachers t ";
+        sql += " where ";
+        sql += "    sj.sj_teacher_id = t.t_id ";
+
+    const result = mysqlConnection.query(sql, (err, row, data) => {
         if(!err) {
             res.send(row)
         } else {
             res.send(err.message)
+        }
+    })
+});
+
+app.post("/subjects/addSubject", (req, res) => {
+    let resData = {
+        isError:false,
+        message: ""
+    };
+
+    const { code, name, credit, t_id} = req.body
+    let sql  = " insert into register_system.subjects ";
+        sql += " (sj_code, sj_name, sj_credit, sj_teacher_id) ";
+        sql += "  values ";
+        sql += " (?,?,?,?) ";
+
+    const result = mysqlConnection.query(sql, [code, name, credit, t_id], (err, data) => {
+        if(!err) {
+            resData.isError=false
+            resData.message="Add new subject complete"
+            res.send(resData)
+
+        } else {
+            resData.isError=true
+            resData.message=err.message
+            res.send(resData)
         }
     })
 });
@@ -332,6 +400,18 @@ app.get("/messages", async (req, res) => {
 });
 
 // Other //
+app.post("/others/registerUser", async (req, res) => {
+    const { id,username, password, email, phone, type, block, status } = req.body
+    const result = mysqlConnection.query("INSERT INTO register_system.register_user (regist_id, regist_username, regist_password, regist_email, regist_phone, regist_type, is_block, regist_status) VALUES (?,?,?,?,?,?,?,?)",[id,username,password,email,phone,type,block,status], (err, data) => {
+        if(!err) {
+            data.message = "Register user successful"
+            res.send(data)
+        } else {
+            res.send(err.message)
+        }
+    })
+});
+
 app.get("/others/checkDuplicateUsername/:username", async (req, res) => {
     const { username } = req.params
     const result = mysqlConnection.query("SELECT regist_username FROM register_system.register_user WHERE regist_username = ?",[username], (err, row, data) => {

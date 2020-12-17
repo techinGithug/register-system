@@ -41,7 +41,10 @@ const AdminStudent = (props) => {
             if(jsonData.length > 0) {
                 setCountStd(count)
                 setStudents(jsonData)
+            } else {
+                console.log(jsonData)
             }
+
         } else if(!ok) {
             console.log(`${status} ${statusText} this ${url}`)
         }
@@ -105,7 +108,7 @@ const AdminStudent = (props) => {
     return (
         <Fragment>
             <AdminHeader props={props} />
-            <div className="container mt-4">
+            <div className="container w-50 mt-4">
                 <div className="d-flex flex-row-reverse">
                     <button className="btn btn-light">
                         <IoPersonAddOutline className="ics-3" />

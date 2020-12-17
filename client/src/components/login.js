@@ -3,6 +3,11 @@ import { IoAirplane, IoPersonCircleOutline } from "react-icons/io5";
 import AppContext from "../context/appContext";
 import Webconfig from '../api/web-config';
 
+import { 
+    IoCreateOutline,
+    IoLogInOutline
+ } from "react-icons/io5";
+
 
 const Login = ( props ) => {
     const { login, getUserDataByUsername, genToken } = useContext(AppContext)
@@ -28,7 +33,7 @@ const Login = ( props ) => {
             props.history.push("/student-register")
         }
         if(id === "2") { // 2 is teacher
-            props.history.push("/teacher-register")
+            props.history.push("/register-teacher")
         }
     }
 
@@ -43,8 +48,8 @@ const Login = ( props ) => {
                 if(ok) {
                     const jsonData = await res.json()
                     if(jsonData.length > 0) {
-                        const {regist_username: user, regist_password: pass, is_block } = jsonData[0]
-                        if(username === user && password === pass) {
+                        const {regist_username: user, regist_password: pass, regist_type: type, is_block } = jsonData[0]
+                        if(username === user && password === pass && id === type) {
                             if(is_block === "1") {
                                 setMessage("This user was blocked")
                                 setIsError(true)
@@ -68,7 +73,7 @@ const Login = ( props ) => {
 
                     } else {
                         // console.log("No data...")
-                        setMessage("This user not found!")
+                        setMessage("This user not found. please register!")
                         setIsError(true)
                         setTimeOut()
                     }
@@ -89,8 +94,8 @@ const Login = ( props ) => {
                 if(ok) {
                     const jsonData = await res.json()
                     if(jsonData.length > 0) {
-                        const { regist_username: user, regist_password: pass} = jsonData[0]
-                        if(username === user && password === pass) {
+                        const { regist_username: user, regist_password: pass, regist_type: type} = jsonData[0]
+                        if(username === user && password === pass && id === type) {
                             let token = genToken()
                             const authLogin = {
                                 token: token,
@@ -107,7 +112,7 @@ const Login = ( props ) => {
                             setTimeOut()
                         }
                     } else {
-                        setMessage("This user not found!")
+                        setMessage("This user not found. please register!")
                         setIsError(true)
                         setTimeOut()
                     }
@@ -222,8 +227,8 @@ const Login = ( props ) => {
                 </div>
 
                 <div className="text-center">
-                    <button type="submit" className="btn btn-light mr-1">Login</button>
-                    <button type="button" className="btn btn-light" onClick={() => handleRegister()}>Register</button>
+                    <button type="submit" className="btn btn-light mr-1"><IoLogInOutline className="ics-3" /></button>
+                    <button type="button" className="btn btn-light" onClick={() => handleRegister()}><IoCreateOutline className="ics-3" /></button>
                 </div>
                 {isError && (
                     <div className="alert alert-danger mt-4" role="alert">
